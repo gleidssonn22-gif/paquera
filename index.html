@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Paquera — o app de relacionamento brasileiro. Encontre pessoas incríveis perto de você. Descubra, combine e converse." />
+  <meta name="theme-color" content="#ff4d6d" />
+  <title>Paquera — Encontre alguém especial</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💘</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div id="landing">
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#/" class="logo">
+        <span class="logo-mark">💘</span>
+        <span>Paquera</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#depoimentos">Histórias</a>
+        <a href="#app">Baixar</a>
+      </nav>
+      <div class="nav-cta">
+        <button class="btn btn-ghost" onclick="openAuth('login')">Entrar</button>
+        <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Criar conta</button>
+      </div>
+      <button class="menu-toggle" onclick="document.querySelector('.nav-links').style.display = document.querySelector('.nav-links').style.display === 'flex' ? 'none' : 'flex'">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="tag">🔥 +2 milhões de brasileiros</span>
+        <h1>Encontre alguém <span class="gradient-text">especial</span> perto de você</h1>
+        <p class="lead">O Paquera conecta pessoas com interesses em comum na sua cidade. Deslize, curta, combine e comece uma conversa. O amor (ou aquele rolê) pode estar a poucos quilômetros.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="openAuth('signup')">Criar conta grátis →</button>
+          <button class="btn btn-outline" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})">Como funciona</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><b>2M+</b><span>Pessoas conectadas</span></div>
+          <div class="hero-stat"><b>150 mil</b><span>Matches por dia</span></div>
+          <div class="hero-stat"><b>4.8★</b><span>Avaliação média</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card hc-1">
+          <img src="assets/profiles/profile-01.jpg" alt="Larissa" />
+          <div class="hc-info"><b>Larissa, 26</b><span>Rio de Janeiro · 5 km</span></div>
+        </div>
+        <div class="hero-card hc-2">
+          <img src="assets/profiles/profile-08.jpg" alt="Rafael" />
+          <div class="hc-info"><b>Rafael, 27</b><span>Fortaleza · 10 km</span></div>
+        </div>
+        <div class="hc-badge">✨ É match!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="section" id="como-funciona">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Simples assim</span>
+        <h2>Como funciona o Paquera</h2>
+        <p>Em poucos minutos você está pronto para conhecer pessoas incríveis.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Crie seu perfil</h3>
+          <p>Adicione suas fotos, uma bio que mostre quem você é e seus interesses. Quanto mais completo, mais matches.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Deslize e curta</h3>
+          <p>Veja perfis perto de você. Deslize para a direita se curtiu, para a esquerda se não. É rápido e divertido.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Combine e converse</h3>
+          <p>Quando os dois curtem um ao outro, é match! Comecem a conversar e quem sabe não rola o primeiro encontro?</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recursos -->
+  <section class="section" id="recursos" style="background:#fff;">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Por que Paquera</span>
+        <h2>Tudo que você precisa para encontrar alguém</h2>
+        <p>Feito para o jeito brasileiro de se relacionar.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <h3>Pessoas perto de você</h3>
+          <p>Encontre quem está na sua cidade ou bairro. Filtre por distância e facilite o primeiro encontro.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Match por interesses</h3>
+          <p>Nosso algoritmo prioriza pessoas com gostos em comum. Música, praia, café, séries — o que você ama.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Privacidade em primeiro lugar</h3>
+          <p>Seus dados são protegidos. Você controla quem vê o que e pode bloquear ou denunciar com um toque.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Chat integrado</h3>
+          <p>Converse com seus matches sem sair do app. Reações, fotos e figurinhas para quebrar o gelo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Super Like</h3>
+          <p>Use um Super Like para mostrar interesse real. A pessoa é notificada e suas chances dobram.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌙</div>
+          <h3>Modo noite e rolês</h3>
+          <p>Descubra eventos e encontros casuais na sua cidade. Perfeito para quem não quer só ficar no chat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Depoimentos -->
+  <section class="section testimonials" id="depoimentos">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Histórias reais</span>
+        <h2>Quem encontrou no Paquera</h2>
+        <p>Mais do que matches, relacionamentos de verdade.</p>
+      </div>
+      <div class="test-grid">
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p>"Nos conhecemos no Paquera há dois anos e hoje moramos juntos. O match foi rápido, a conversa fluiu e o resto é história. Recomendo de olhos fechados!"</p>
+          <div class="test-who">
+            <div class="test-avatar">JM</div>
+            <div><b>Juliana &amp; Marcos</b><span>Casados · São Paulo</span></div>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p>"Não procurava nada sério, só queria conhecer gente nova. Aí dei match com a Carol e hoje completamos 1 ano de namoro. O app é muito bem feito!"</p>
+          <div class="test-who">
+            <div class="test-avatar">RL</div>
+            <div><b>Rafael L.</b><span>Namuorando · Belo Horizonte</span></div>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p>"Como mãe solo, tinha pouco tempo pra sair. O Paquera me permitiu conhecer pessoas no meu ritmo. Hoje tenho um namoro incrível e meu filho adora ele!"</p>
+          <div class="test-who">
+            <div class="test-avatar">FS</div>
+            <div><b>Fernanda S.</b><span>Namorando · Curitiba</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" id="app">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Pronto para encontrar alguém especial?</h2>
+        <p>Crie sua conta grátis e comece a paquerar hoje mesmo. É de graça e leva menos de 2 minutos.</p>
+        <button class="btn" onclick="openAuth('signup')">💘 Começar agora — é grátis</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo" style="color:#fff;"><span class="logo-mark">💘</span><span>Paquera</span></div>
+          <p>O app de relacionamento feito para o Brasil. Conectando pessoas reais, com interesses reais, desde 2024.</p>
+        </div>
+        <div>
+          <h4>Produto</h4>
+          <ul>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#como-funciona">Como funciona</a></li>
+            <li><a href="#">Plano Premium</a></li>
+            <li><a href="#">Eventos</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre nós</a></li>
+            <li><a href="#">Carreiras</a></li>
+            <li><a href="#">Imprensa</a></li>
+            <li><a href="#">Contato</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Suporte</h4>
+          <ul>
+            <li><a href="#">Central de ajuda</a></li>
+            <li><a href="#">Segurança</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Termos de uso</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 Paquera Tecnologia Ltda. — CNPJ 00.000.000/0001-00 — Feito com ❤️ no Brasil. Demo: perfis fictícios para demonstração.
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ==================== APP (pós-login) ==================== -->
+<div id="app">
+  <div class="app-topbar">
+    <div class="app-title"><span class="logo-mark" style="width:30px;height:30px;font-size:16px;border-radius:9px;">💘</span> Paquera</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="showToast('Filtros: ajuste na tela Descobrir')" title="Filtros">⚙️</button>
+      <button class="icon-btn" onclick="logout()" title="Sair">⎋</button>
+    </div>
+  </div>
+
+  <!-- View: Descobrir -->
+  <div class="view" id="view-discover">
+    <div class="discover-wrap">
+      <div class="filter-bar" id="filter-bar"></div>
+      <div class="card-stack" id="card-stack"></div>
+      <div class="swipe-actions" id="swipe-actions" style="display:none;">
+        <button class="swipe-btn nope" onclick="swipe('nope')" title="Não curti">✕</button>
+        <button class="swipe-btn super" onclick="swipe('super')" title="Super Like">⭐</button>
+        <button class="swipe-btn like" onclick="swipe('like')" title="Curtir">♥</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View: Perfil detalhe -->
+  <div class="view" id="view-profile">
+    <div id="profile-detail-content"></div>
+  </div>
+
+  <!-- View: Matches -->
+  <div class="view" id="view-matches">
+    <div class="matches-wrap">
+      <div class="new-matches">
+        <h3>Novos matches</h3>
+        <div class="matches-scroll" id="new-matches-list"></div>
+      </div>
+      <div class="conversas">
+        <h3>Mensagens</h3>
+        <div id="conversas-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View: Chat -->
+  <div class="view" id="view-chat">
+    <div class="chat-header" id="chat-header"></div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <input type="text" id="chat-input-field" placeholder="Escreva uma mensagem..." autocomplete="off" />
+      <button onclick="sendMessage()" title="Enviar">➤</button>
+    </div>
+  </div>
+
+  <!-- View: Meu perfil -->
+  <div class="view" id="view-me">
+    <div class="profile-wrap">
+      <div class="profile-card">
+        <div class="profile-avatar"><img id="me-avatar" src="assets/profiles/profile-02.jpg" alt="Você" /></div>
+        <h2 id="me-name">Seu nome</h2>
+        <div class="pc-meta" id="me-meta">—</div>
+        <div class="profile-stats">
+          <div><b id="stat-likes">0</b><span>Curtidas</span></div>
+          <div><b id="stat-matches">0</b><span>Matches</span></div>
+          <div><b id="stat-msgs">0</b><span>Mensagens</span></div>
+        </div>
+      </div>
+
+      <div class="profile-card" style="text-align:left;">
+        <h3 style="margin-bottom:18px;font-size:18px;">Editar perfil</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="edit-name" placeholder="Seu nome" />
+          </div>
+          <div class="form-group">
+            <label>Idade</label>
+            <input type="number" id="edit-age" min="18" max="99" placeholder="25" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input type="text" id="edit-city" placeholder="São Paulo, SP" />
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea id="edit-bio" placeholder="Conte um pouco sobre você..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Profissão</label>
+          <input type="text" id="edit-job" placeholder="Sua profissão" />
+        </div>
+        <div class="form-group">
+          <label>Seus interesses (selecione até 6)</label>
+          <div class="interesse-picker" id="interesse-picker"></div>
+        </div>
+        <div class="form-group">
+          <label>Sua foto de perfil</label>
+          <div class="interesse-picker" id="avatar-picker"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="saveProfile()">Salvar alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="bn-item active" data-view="discover" onclick="navigate('discover')">
+      <span class="bn-icon">🔥</span><span>Descobrir</span>
+    </button>
+    <button class="bn-item" data-view="matches" onclick="navigate('matches')">
+      <span class="bn-icon">💬</span><span>Matches</span>
+      <span class="bn-badge" id="bn-badge" style="display:none;">0</span>
+    </button>
+    <button class="bn-item" data-view="me" onclick="navigate('me')">
+      <span class="bn-icon">👤</span><span>Perfil</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ==================== AUTH MODAL ==================== -->
+<div class="auth-overlay" id="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-card">
+    <span class="auth-close" onclick="closeAuth()">✕</span>
+    <div id="auth-login">
+      <h2>Bem-vindo(a) de volta! 👋</h2>
+      <p class="sub">Entre para continuar paquerando.</p>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="voce@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-pass" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="doLogin()">Entrar</button>
+      <div class="auth-switch">Não tem conta? <button onclick="switchAuth('signup')">Criar agora</button></div>
+    </div>
+    <div id="auth-signup" style="display:none;">
+      <h2>Crie sua conta grátis 💘</h2>
+      <p class="sub">Leva menos de 2 minutos. É de graça!</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nome</label>
+          <input type="text" id="signup-name" placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label>Idade</label>
+          <input type="number" id="signup-age" min="18" max="99" placeholder="25" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="signup-email" placeholder="voce@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Cidade</label>
+        <input type="text" id="signup-city" placeholder="Sua cidade" />
+      </div>
+      <div class="form-group">
+        <label>Quero conhecer</label>
+        <select id="signup-interest">
+          <option>Mulheres</option>
+          <option>Homens</option>
+          <option>Homens e mulheres</option>
+          <option>Todos</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="doSignup()">Criar conta e começar</button>
+      <div class="auth-switch">Já tem conta? <button onclick="switchAuth('login')">Entrar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MATCH MODAL ==================== -->
+<div class="match-modal" id="match-modal">
+  <h2>É MATCH!</h2>
+  <p id="match-text">Vocês curtiram um ao outro.</p>
+  <div class="match-photos" id="match-photos"></div>
+  <div>
+    <button class="btn" onclick="closeMatchAndChat()">💬 Enviar mensagem</button><br/>
+    <button class="btn btn-outline-light" onclick="closeMatch()">Continuar descobrindo</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
