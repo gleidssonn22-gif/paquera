@@ -11,7 +11,9 @@ const LS = {
   matches: 'paquera_matches',
   chats: 'paquera_chats',
   unread: 'paquera_unread',
-  filters: 'paquera_filters'
+  filters: 'paquera_filters',
+  blocked: 'paquera_blocked',
+  reports: 'paquera_reports'
 };
 
 const state = {
@@ -21,11 +23,14 @@ const state = {
   matches: load(LS.matches, []),
   chats: load(LS.chats, {}),
   unread: load(LS.unread, {}),
-  filters: load(LS.filters, { idadeMin: 18, idadeMax: 45, distanciaMax: 50, interesse: 'Todos' }),
+  filters: { idadeMin: 18, idadeMax: 45, distanciaMax: 50, interesse: 'Todos', cidade: '', ...load(LS.filters, {}) },
+  blocked: load(LS.blocked, []),
+  reports: load(LS.reports, []),
   currentView: 'discover',
   currentChatId: null,
   deck: [],
-  pendingMatch: null
+  pendingMatch: null,
+  pendingAction: null
 };
 
 function load(key, fallback) {
@@ -36,7 +41,7 @@ function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 function persistAll() {
   save(LS.user, state.user); save(LS.likes, state.likes); save(LS.nopes, state.nopes);
   save(LS.matches, state.matches); save(LS.chats, state.chats); save(LS.unread, state.unread);
-  save(LS.filters, state.filters);
+  save(LS.filters, state.filters); save(LS.blocked, state.blocked); save(LS.reports, state.reports);
 }
 
 // ---------- Utilitários ----------
@@ -55,6 +60,113 @@ function showToast(msg) {
   clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 function perfilById(id) { return PERFIS.find(p => p.id === id); }
+function normalizeText(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
+}
+
+const INFO_PAGES = {
+  terms: {
+    title: 'Termos da demonstração',
+    sections: [
+      ['Uso de teste', 'Esta versão é um protótipo. Perfis, curtidas, matches e respostas de conversa são fictícios e não representam pessoas ou um serviço ativo.'],
+      ['Idade e dados', 'A experiência é destinada exclusivamente a pessoas com 18 anos ou mais. Use informações fictícias; não informe senhas reais, dados sensíveis nem dados de terceiros.'],
+      ['Limites', 'Não há cadastro, envio de mensagens, cobrança, atendimento ou moderação real. Este aviso não substitui os termos jurídicos de um produto publicado.']
+    ]
+  },
+  privacy: {
+    title: 'Aviso de privacidade da demonstração',
+    sections: [
+      ['O que fica no navegador', 'O perfil de teste, preferências, curtidas, matches e mensagens simuladas ficam no armazenamento local deste navegador. O aplicativo não envia essas informações para um servidor.'],
+      ['Publicidade e parceiros', 'Se anúncios forem configurados e você permitir, os scripts dos parceiros de publicidade serão carregados e poderão usar cookies e tratar dados técnicos, como endereço IP e informações do navegador, para personalizar e medir anúncios, conforme as políticas deles. Sem configuração ou consentimento, esses scripts não são carregados.'],
+      ['Cuide do dispositivo', 'Qualquer pessoa com acesso ao mesmo navegador pode ver os dados salvos. Evite dados pessoais e use “Apagar meus dados deste navegador” no seu perfil para removê-los.'],
+      ['Produto real', 'Antes de lançar um serviço real, será necessário definir e publicar a identidade do controlador, finalidades, bases legais, retenção, canal de direitos e contato, conforme a LGPD.']
+    ]
+  },
+  safety: {
+    title: 'Segurança',
+    sections: [
+      ['Nesta versão', 'Não existem outros usuários reais. Bloquear e denunciar são ações locais de demonstração e não são enviadas a uma equipe de moderação.'],
+      ['Encontros presenciais', 'Se conhecer alguém em outro serviço, prefira locais públicos, avise uma pessoa de confiança, organize seu próprio transporte e não compartilhe endereço ou dados financeiros.'],
+      ['Antes de um lançamento', 'Um serviço real precisa de verificação etária adequada, denúncia e bloqueio efetivos, moderação com resposta, proteção de contas e um canal claro para pedir ajuda.']
+    ]
+  }
+};
+
+function openInfo(page) {
+  const content = INFO_PAGES[page];
+  if (!content) return;
+  $('info-title').textContent = content.title;
+  $('info-content').innerHTML = content.sections.map(([title, text]) =>
+    `<section><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`
+  ).join('');
+  $('info-dialog').showModal();
+}
+
+function closeDialog(id) {
+  const dialog = $(id);
+  if (dialog && dialog.open) dialog.close();
+}
+
+function openAction(type, profileId = null) {
+  const actions = {
+    logout: ['Sair da demonstração?', 'Seus dados continuarão salvos neste navegador.', 'Sair'],
+    clear: ['Apagar dados deste navegador?', 'O perfil e todas as interações salvas nesta demonstração serão removidos.', 'Apagar dados'],
+    block: ['Bloquear perfil?', 'Este perfil será removido dos resultados locais desta demonstração.', 'Bloquear'],
+    report: ['Denunciar perfil', 'O registro ficará apenas neste navegador; nenhuma denúncia será enviada a uma equipe.', 'Registrar denúncia']
+  };
+  const action = actions[type];
+  if (!action) return;
+  state.pendingAction = { type, profileId };
+  $('action-title').textContent = action[0];
+  $('action-description').textContent = action[1];
+  $('action-confirm').textContent = action[2];
+  $('report-reason-group').hidden = type !== 'report';
+  $('report-reason').value = '';
+  $('action-dialog').showModal();
+  if (type === 'report') $('report-reason').focus();
+}
+
+function confirmAction(event) {
+  event.preventDefault();
+  const pending = state.pendingAction;
+  if (!pending) return;
+  closeDialog('action-dialog');
+  state.pendingAction = null;
+  if (pending.type === 'logout') {
+    $('app').classList.remove('active');
+    $('landing').classList.remove('hidden');
+    window.scrollTo(0, 0);
+  } else if (pending.type === 'clear') {
+    Object.values(LS).forEach(key => localStorage.removeItem(key));
+    localStorage.removeItem(AD_CONSENT_KEY);
+    window.location.reload();
+  } else if (pending.type === 'block') {
+    blockProfile(pending.profileId, true);
+  } else if (pending.type === 'report') {
+    const reason = $('report-reason').value.trim().slice(0, 120);
+    if (!reason) {
+      showToast('Informe um motivo para a denúncia');
+      return;
+    }
+    state.reports.push({ id: pending.profileId, reason, ts: Date.now() });
+    persistAll();
+    showToast('Registro local salvo; nenhuma denúncia foi enviada.');
+  }
+}
+
+function toggleMenu() {
+  const menu = document.querySelector('.nav-links');
+  const button = document.querySelector('.menu-toggle');
+  const isOpen = menu.classList.toggle('is-open');
+  button.setAttribute('aria-expanded', String(isOpen));
+}
+
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.remove('is-open');
+    document.querySelector('.menu-toggle').setAttribute('aria-expanded', 'false');
+  });
+});
 
 // ---------- Auth ----------
 function openAuth(mode) {
@@ -67,14 +179,11 @@ function switchAuth(mode) {
   $('auth-signup').style.display = mode === 'signup' ? 'block' : 'none';
 }
 function doLogin() {
-  const email = $('login-email').value.trim();
-  const pass = $('login-pass').value;
-  if (!email || !pass) { showToast('Preencha e-mail e senha'); return; }
-  // Demo: aceita qualquer login. Restaura perfil salvo ou cria padrão.
+  const name = $('login-name').value.trim();
   if (!state.user) {
     state.user = {
-      name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      age: 26, email, city: 'São Paulo, SP', job: 'Profissional',
+      name: name || 'Visitante',
+      age: 26, city: 'São Paulo, SP', job: 'Profissional',
       bio: 'Novo por aqui. Vamos conversar?', interesses: ['Música','Praia','Viagens'],
       avatar: 'assets/profiles/profile-02.jpg', interesseEm: 'Mulheres'
     };
@@ -84,13 +193,13 @@ function doLogin() {
 function doSignup() {
   const name = $('signup-name').value.trim();
   const age = parseInt($('signup-age').value);
-  const email = $('signup-email').value.trim();
   const city = $('signup-city').value.trim() || 'Brasil';
   const interesseEm = $('signup-interest').value;
-  if (!name || !age || !email) { showToast('Preencha nome, idade e e-mail'); return; }
-  if (age < 18) { showToast('Você precisa ter 18 anos ou mais'); return; }
+  if (!name || !age) { showToast('Preencha nome e idade'); return; }
+  if (age < 18 || age > 99) { showToast('A demonstração é apenas para pessoas de 18 a 99 anos'); return; }
+  if (!$('signup-adult').checked) { showToast('Confirme que tem 18 anos ou mais e leia os avisos'); return; }
   state.user = {
-    name, age, email, city, job: '', bio: 'Acabei de entrar no Paquera. Vamos conversar?',
+    name, age, city, job: '', bio: 'Acabei de entrar no Paquera. Vamos conversar?',
     interesses: ['Música','Cinema','Gastronomia'], avatar: 'assets/profiles/profile-02.jpg', interesseEm
   };
   // Limpa estado anterior de demo
@@ -104,10 +213,10 @@ function finishAuth() {
   showToast('Bem-vindo(a), ' + state.user.name.split(' ')[0] + '! 💘');
 }
 function logout() {
-  if (!confirm('Sair da conta? Seus dados ficam salvos neste navegador.')) return;
-  $('app').classList.remove('active');
-  $('landing').classList.remove('hidden');
-  window.scrollTo(0, 0);
+  openAction('logout');
+}
+function clearDemoData() {
+  openAction('clear');
 }
 function enterApp() {
   $('landing').classList.add('hidden');
@@ -143,20 +252,60 @@ function buildFilterBar() {
   const opts = ['Todos', 'Praia', 'Música', 'Viagens', 'Gastronomia', 'Fitness', 'Arte', 'Esportes'];
   bar.innerHTML = opts.map(o =>
     `<button class="filter-chip ${state.filters.interesse === o ? 'active' : ''}" onclick="setFilter('${o}')">${o === 'Todos' ? '✨ Todos' : o}</button>`
-  ).join('');
+  ).join('') + `<button class="filter-chip" onclick="openFilterDialog()" aria-label="Ajustar idade, distância e cidade">⚙ Filtros</button>`;
 }
 function setFilter(o) {
   state.filters.interesse = o;
   persistAll(); buildFilterBar(); renderDeck();
 }
+function openFilterDialog() {
+  $('filter-age-min').value = state.filters.idadeMin;
+  $('filter-age-max').value = state.filters.idadeMax;
+  $('filter-distance').value = state.filters.distanciaMax;
+  $('filter-city').value = state.filters.cidade || '';
+  $('filter-dialog').showModal();
+}
+function applyFilters(event) {
+  event.preventDefault();
+  const idadeMin = Number($('filter-age-min').value);
+  const idadeMax = Number($('filter-age-max').value);
+  const distanciaMax = Number($('filter-distance').value);
+  if (idadeMin < 18 || idadeMax > 99 || idadeMin > idadeMax) {
+    showToast('Confira a faixa de idade entre 18 e 99 anos');
+    return;
+  }
+  if (distanciaMax < 1 || distanciaMax > 500) {
+    showToast('A distância deve estar entre 1 e 500 km');
+    return;
+  }
+  state.filters.idadeMin = idadeMin;
+  state.filters.idadeMax = idadeMax;
+  state.filters.distanciaMax = distanciaMax;
+  state.filters.cidade = $('filter-city').value.trim();
+  persistAll();
+  closeDialog('filter-dialog');
+  renderDeck();
+}
+function resetFilters() {
+  state.filters = { idadeMin: 18, idadeMax: 45, distanciaMax: 50, interesse: 'Todos', cidade: '' };
+  persistAll();
+  buildFilterBar();
+  closeDialog('filter-dialog');
+  renderDeck();
+}
 
 // ---------- Deck (Descobrir) ----------
 function filteredProfiles() {
   return PERFIS.filter(p => {
-    if (state.likes.includes(p.id) || state.nopes.includes(p.id)) return false;
+    if (state.likes.includes(p.id) || state.nopes.includes(p.id) || state.blocked.includes(p.id)) return false;
     if (p.idade < state.filters.idadeMin || p.idade > state.filters.idadeMax) return false;
     if (p.distancia > state.filters.distanciaMax) return false;
+    if (state.filters.cidade && !normalizeText(p.cidade).includes(normalizeText(state.filters.cidade))) return false;
     if (state.filters.interesse !== 'Todos' && !p.interesses.includes(state.filters.interesse)) return false;
+    const preference = state.user && state.user.interesseEm;
+    if (preference === 'Mulheres' && p.genero !== 'F') return false;
+    if (preference === 'Homens' && p.genero !== 'M') return false;
+    if (preference === 'Homens e mulheres' && !['F', 'M'].includes(p.genero)) return false;
     return true;
   });
 }
@@ -169,9 +318,10 @@ function renderDeck() {
     stack.innerHTML = `
       <div class="empty-state">
         <div class="es-icon">🎉</div>
-        <h3>Você viu todo mundo por aqui!</h3>
-        <p>Volte mais tarde ou ajuste os filtros para ver mais pessoas.</p>
-        <button class="btn btn-outline" onclick="resetDeck()">Recomeçar</button>
+        <h3>Nenhum perfil para mostrar</h3>
+        <p>Limpe os filtros ou recomece o deck de demonstração.</p>
+        <button class="btn btn-outline" onclick="resetFilters()">Limpar filtros</button>
+        <button class="btn btn-ghost" onclick="resetDeck()">Recomeçar deck</button>
       </div>`;
     return;
   }
@@ -183,7 +333,7 @@ function renderDeck() {
 function cardHTML(p, idx) {
   const scale = 1 - idx * 0.04, y = idx * 10;
   return `
-    <div class="swipe-card" data-id="${p.id}" style="transform: translateY(${y}px) scale(${scale}); z-index: ${10 - idx};">
+    <article class="swipe-card" data-id="${p.id}" tabindex="0" role="button" aria-label="Ver perfil de ${esc(p.nome)}, ${p.idade} anos" style="transform: translateY(${y}px) scale(${scale}); z-index: ${10 - idx};">
       <img src="${p.foto}" alt="${esc(p.nome)}" draggable="false" />
       <div class="sc-overlay"></div>
       <div class="swipe-stamp stamp-like">Curti</div>
@@ -194,7 +344,7 @@ function cardHTML(p, idx) {
         <div class="sc-bio">${esc(p.bio)}</div>
         <div class="sc-tags">${p.interesses.slice(0, 4).map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
       </div>
-    </div>`;
+    </article>`;
 }
 function resetDeck() {
   state.likes = []; state.nopes = []; persistAll(); renderDeck();
@@ -204,7 +354,7 @@ function resetDeck() {
 // Swipe por arrasto (pointer events)
 function attachSwipe(card, perfil) {
   if (!card) return;
-  let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false;
+  let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false, moved = false;
   const likeStamp = card.querySelector('.stamp-like');
   const nopeStamp = card.querySelector('.stamp-nope');
 
@@ -218,6 +368,7 @@ function attachSwipe(card, perfil) {
     if (!dragging) return;
     const pt = e.touches ? e.touches[0] : e;
     dx = pt.clientX - startX; dy = pt.clientY - startY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
     const rot = dx / 18;
     card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
     likeStamp.style.opacity = Math.max(0, Math.min(1, dx / 100));
@@ -238,7 +389,15 @@ function attachSwipe(card, perfil) {
   window.addEventListener('mouseup', onUp);
   window.addEventListener('touchend', onUp);
   card.addEventListener('click', e => {
-    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) navigate('profile', perfil.id);
+    if (moved) { moved = false; return; }
+    if (e.target.closest('button')) return;
+    navigate('profile', perfil.id);
+  });
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigate('profile', perfil.id);
+    }
   });
 }
 
@@ -323,7 +482,35 @@ function renderProfileDetail(id) {
           : `<button class="btn btn-outline" style="flex:1" onclick="navigate('discover')">← Voltar</button>
              <button class="btn btn-primary" style="flex:2" onclick="quickLike(${p.id})">♥ Curtir ${esc(p.nome)}</button>`}
       </div>
+      <div class="profile-safety-actions">
+        <button type="button" onclick="blockProfile(${p.id})">Bloquear perfil</button>
+        <button type="button" onclick="reportProfile(${p.id})">Denunciar perfil</button>
+      </div>
     </div>`;
+}
+function blockProfile(id, confirmed = false) {
+  const p = perfilById(id);
+  if (!p) return;
+  if (!confirmed) {
+    openAction('block', id);
+    return;
+  }
+  if (!state.blocked.includes(id)) state.blocked.push(id);
+  state.likes = state.likes.filter(profileId => profileId !== id);
+  state.nopes = state.nopes.filter(profileId => profileId !== id);
+  state.matches = state.matches.filter(match => match.id !== id);
+  delete state.chats[id];
+  delete state.unread[id];
+  persistAll();
+  updateBadge();
+  updateMe();
+  navigate('discover');
+  showToast('Perfil bloqueado apenas neste navegador.');
+}
+function reportProfile(id) {
+  const p = perfilById(id);
+  if (!p) return;
+  openAction('report', id);
 }
 function quickLike(id) {
   const p = perfilById(id);
@@ -390,7 +577,7 @@ function openChat(id) {
   $('chat-header').innerHTML = `
     <button class="icon-btn" onclick="navigate('matches')" style="margin-right:4px;">←</button>
     <img src="${p.foto}" alt="${esc(p.nome)}" />
-    <div class="ch-info"><b>${esc(p.nome)}, ${p.idade}</b><span>● Online agora</span></div>`;
+    <div class="ch-info"><b>${esc(p.nome)}, ${p.idade}</b><span>Resposta automática da demonstração</span></div>`;
   renderMessages();
   setTimeout(() => $('chat-input-field').focus(), 100);
 }
@@ -449,6 +636,7 @@ function fillEditForm() {
   $('edit-city').value = state.user.city;
   $('edit-bio').value = state.user.bio || '';
   $('edit-job').value = state.user.job || '';
+  $('edit-interest').value = state.user.interesseEm || 'Todos';
   document.querySelectorAll('#interesse-picker .ip-chip').forEach(ch => {
     ch.classList.toggle('selected', state.user.interesses.includes(ch.dataset.interesse));
   });
@@ -473,23 +661,29 @@ function toggleInteresse(el) {
 function buildAvatarPicker() {
   const picker = $('avatar-picker');
   picker.innerHTML = PERFIS.map(p => `
-    <img src="${p.foto}" data-avatar="${p.foto}" onclick="pickAvatar(this)"
-      style="width:56px;height:56px;object-fit:cover;border-radius:50%;cursor:pointer;border:3px solid ${state.user.avatar === p.foto ? 'var(--primary)' : 'transparent'};padding:2px;" />`
+    <button type="button" class="avatar-choice ${state.user.avatar === p.foto ? 'selected' : ''}" data-avatar="${p.foto}" onclick="pickAvatar(this)" aria-label="Usar foto de demonstração de ${esc(p.nome)}">
+      <img src="${p.foto}" alt="" />
+    </button>`
   ).join('');
 }
 function pickAvatar(el) {
   state.user.avatar = el.dataset.avatar;
-  document.querySelectorAll('#avatar-picker img').forEach(i => i.style.borderColor = 'transparent');
-  el.style.borderColor = 'var(--primary)';
+  document.querySelectorAll('#avatar-picker .avatar-choice').forEach(choice => choice.classList.toggle('selected', choice === el));
   persistAll(); updateMe();
 }
 function saveProfile() {
+  const age = Number($('edit-age').value);
+  if (!Number.isInteger(age) || age < 18 || age > 99) {
+    showToast('Informe uma idade entre 18 e 99 anos');
+    return;
+  }
   state.user.name = $('edit-name').value.trim() || state.user.name;
-  state.user.age = parseInt($('edit-age').value) || state.user.age;
+  state.user.age = age;
   state.user.city = $('edit-city').value.trim() || state.user.city;
   state.user.bio = $('edit-bio').value.trim();
   state.user.job = $('edit-job').value.trim();
-  persistAll(); updateMe();
+  state.user.interesseEm = $('edit-interest').value;
+  persistAll(); updateMe(); renderDeck();
   showToast('Perfil salvo! ✨');
 }
 
