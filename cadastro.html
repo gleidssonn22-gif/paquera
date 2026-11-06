@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta — Paquera 💘</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><div class="logo">💘 Paquera</div><nav><a href="index.html">Voltar</a></nav></header>
+  <form id="formCadastro">
+    <h2>Criar sua conta</h2>
+    <input type="text" id="nome" placeholder="Seu nome" required>
+    <input type="email" id="email" placeholder="Seu e-mail" required>
+    <input type="password" id="senha" placeholder="Criar senha" required>
+    <input type="number" id="idade" placeholder="Idade">
+    <input type="text" id="cidade" placeholder="Cidade">
+    <select id="genero" style="width:100%;padding:0.9rem;margin:0.5rem 0;border:1px solid #f0c8d8;border-radius:8px;">
+      <option value="">Seu gênero</option>
+      <option value="masculino">Masculino</option>
+      <option value="feminino">Feminino</option>
+      <option value="outro">Outro</option>
+    </select>
+    <textarea id="interesses" placeholder="Fale sobre você e o que busca..." rows="3"></textarea>
+    <button type="submit">Criar Conta 🎉</button>
+  </form>
+  <script src="js/auth.js"></script>
+</body>
+</html>
