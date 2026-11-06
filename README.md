@@ -1,158 +1,73 @@
-# 💘 Paquera — Site de Relacionamento (Static SPA)
+# Paquera — demonstração de site de relacionamentos
 
-Um site de relacionamento completo, **100% estático** (HTML + CSS + JavaScript puro, sem backend, sem build), pronto para subir no **GitHub Pages** e **Cloudflare Pages**.
+Protótipo interativo, estático e em português, feito com HTML, CSS e JavaScript puro. Não exige build e pode ser servido pelo GitHub Pages ou Cloudflare Pages.
 
-Feito em português, com design mobile-first inspirado nos grandes apps de relacionamento.
+**Esta versão não conecta pessoas.** Perfis, matches e conversas são fictícios. Use apenas informações de teste.
 
----
+## O que dá para testar
 
-## ✨ Funcionalidades
+- Criar ou continuar um perfil de demonstração sem e-mail ou senha.
+- Descobrir perfis, ver detalhes e curtir ou pular com botões, teclado ou gesto.
+- Filtrar por idade, distância, cidade, interesses e preferência.
+- Ver matches e conversar com respostas automáticas.
+- Editar o perfil, escolher uma foto de exemplo e apagar os dados locais.
+- Bloquear ou denunciar perfis de exemplo. Esses registros não são enviados a uma equipe.
+- Consultar avisos demonstrativos de privacidade, segurança e termos.
 
-- **Landing page** completa: hero, como funciona, recursos, depoimentos, CTA e rodapé
-- **Cadastro / Login** simulado (dados salvos no navegador via `localStorage`)
-- **Descobrir perfis**: swipe cards com arrasto (mouse e toque), like / não curti / super like
-- **Sistema de matches** com animação de "É match!"
-- **Filtros** por interesse
-- **Lista de matches** e conversas
-- **Chat** com respostas automáticas simuladas e indicador de digitação
-- **Perfil editável**: nome, idade, cidade, bio, profissão, interesses e foto
-- **Notificações** (badge de não lidas) e toasts
-- **Responsivo**: funciona bem em celular, tablet e desktop
-- **12 perfis fictícios** com fotos reais (geradas) para demonstração
+As preferências e interações ficam no `localStorage` do navegador. Quem tiver acesso ao mesmo dispositivo poderá vê-las; use o botão **Apagar meus dados deste navegador** para removê-las.
 
----
+## Arquivos
 
-## 📁 Estrutura do projeto
-
-```
-paquera/
-├── index.html              # Página única (SPA com hash routing)
-├── css/
-│   └── style.css           # Todo o estilo
-├── js/
-│   ├── data.js             # Perfis fictícios + constantes
-│   └── app.js              # Lógica: navegação, swipe, match, chat, perfil
-├── assets/
-│   └── profiles/           # 12 fotos de perfil (fictícias)
-├── .nojekyll               # Evita processamento do Jekyll no GitHub Pages
-└── README.md
+```text
+index.html
+css/style.css
+js/app.js
+js/data.js
+js/ads-config.js
+js/monetization.js
+assets/profiles/
 ```
 
----
+## Preparar anúncios
 
-## 🚀 Deploy 1: GitHub Pages
+Os espaços de publicidade são ocultados e nenhum script de anúncios é carregado por padrão. Para configurar:
 
-### Opção A — Via site do GitHub (recomendado)
+1. Abra `js/ads-config.js` e preencha o ID de editor do Google AdSense (`ca-pub-...`) e os IDs das unidades para `landing` e/ou `discover`, conforme exibidos no seu painel.
+2. Para Monetag, configure a URL HTTPS do script e o ID do contêiner copiados do painel oficial, além do posicionamento `landing` ou `discover`. Não use códigos de terceiros que não reconheça.
+3. Configure um parceiro por posicionamento para evitar sobreposição entre anúncios.
+4. Publique em um domínio controlado por você, conclua a verificação/aprovação de cada rede e faça os ajustes de `ads.txt` exigidos por cada painel antes de ativar anúncios.
+5. Revise as políticas dos parceiros, a política de privacidade e os requisitos legais aplicáveis. Para visitantes do EEE, Reino Unido ou Suíça, use uma CMP certificada pelo Google quando exigido pelas regras do AdSense.
 
-1. Crie um repositório no GitHub (ex.: `meu-paquera`). Pode ser público ou privado*.
-2. Suba esta pasta para o repositório:
-   ```bash
-   cd paquera
-   git init
-   git add .
-   git commit -m "Primeiro commit do Paquera"
-   git branch -M main
-   git remote add origin https://github.com/SEU-USUARIO/meu-paquera.git
-   git push -u origin main
-   ```
-3. No GitHub, vá em **Settings → Pages**.
-4. Em **Source**, escolha `Deploy from a branch`.
-5. Em **Branch**, escolha `main` e pasta `/ (root)`, clique em **Save**.
-6. Aguarde ~1 minuto. Seu site estará em:
-   `https://SEU-USUARIO.github.io/meu-paquera/`
+O aviso de consentimento só aparece quando há uma integração configurada. Os scripts são carregados após a aceitação; a preferência pode ser alterada em **Suporte → Preferências de anúncios**. IDs, aprovação do domínio, política final, CMP quando aplicável e configuração de `ads.txt` são fornecidos pelo proprietário do site e não estão incluídos nesta demonstração. A configuração de anúncios não transforma o protótipo em um serviço de relacionamentos real.
 
-> \* Repositórios privados no GitHub Pages exigem plano Pro. Para conta gratuita, use repositório público.
+## Publicação estática
 
-### Opção B — Via GitHub Actions (build zero, mais rápido)
+Não há comando de build. Para um projeto já conectado ao GitHub e Cloudflare Pages, publique os arquivos do repositório conforme o fluxo configurado. A raiz publicada deve conter `index.html`; mantenha `css/`, `js/` e `assets/` ao lado dele. Se solicitado pela plataforma, use preset `None`, sem comando de build, e diretório de saída `.`.
 
-O arquivo `.nojekyll` já está incluso e garante que nenhum processamento extra seja feito.
+No GitHub Pages, selecione a branch e a pasta raiz que contêm `index.html`. No Cloudflare Pages, confirme que o projeto aponta para a mesma branch e raiz. A publicação só ocorre depois de enviar as alterações ao repositório conectado.
 
----
+## Personalização
 
-## ☁️ Deploy 2: Cloudflare Pages
+- Perfis e conteúdo de exemplo: `js/data.js`.
+- Comportamento e armazenamento local: `js/app.js`.
+- Identidade visual e responsividade: `css/style.css`.
+- Conteúdo da página e avisos: `index.html`.
+- Para trocar imagens, substitua as fotos em `assets/profiles/` mantendo os nomes usados em `js/data.js`.
 
-1. Acesse [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-2. Conecte sua conta e selecione o repositório `meu-paquera`.
-3. Configure:
-   - **Framework preset**: `None`
-   - **Build command**: *(deixe vazio — não precisa buildar)*
-   - **Build output directory**: `/` (ou deixe vazio)
-4. Clique em **Save and Deploy**.
-5. Em ~30 segundos seu site estará no ar em:
-   `https://meu-paquera.pages.dev`
-6. (Opcional) Em **Custom domains**, adicione seu domínio próprio (ex.: `paquera.seudominio.com.br`) — o Cloudflare gera o certificado SSL automaticamente.
+Use somente fotos e dados com autorização de uso.
 
-### Deploy direto (sem GitHub)
+## Antes de lançar um serviço real
 
-Arraste e solte a pasta na área de **Direct Upload** do Cloudflare Pages, ou use a CLI:
-```bash
-npx wrangler pages deploy paquera --project-name=meu-paquera
-```
+Este protótipo **não** possui contas/autenticação reais, banco de dados, mensagens entre usuários, notificações enviadas, cobrança, localização precisa, moderação ou atendimento. Também não constitui termos jurídicos nem política de privacidade final.
 
----
+- Projetar e implementar API, banco de dados, autenticação segura, verificação de e-mail e recuperação de conta.
+- Implementar autorização no servidor, validação, proteção contra abuso e limitação de requisições.
+- Implementar chat em tempo real, notificações com consentimento e moderação de conteúdo e fotos.
+- Implementar denúncia e bloqueio reais, com processo de análise, equipe e resposta.
+- Definir uma verificação de idade apropriada para impedir o uso por menores de 18 anos.
+- Preparar política de privacidade, termos, retenção e exclusão, direitos dos titulares e contato do controlador; fazer revisão jurídica adequada para LGPD.
+- Configurar domínio, HTTPS, monitoramento, backups, gestão de incidentes e canal de suporte.
+- Substituir todo conteúdo fictício por conteúdo autorizado e alegações verificáveis.
+- Testar acessibilidade, segurança, privacidade e comportamento em navegadores e dispositivos antes de divulgar.
 
-## 🌐 Usando domínio próprio
-
-1. Compre um domínio (Registro.br, GoDaddy, Namecheap, etc.).
-2. No Cloudflare Pages → **Custom domains** → adicione o domínio.
-3. Aponte os nameservers do domínio para o Cloudflare (ou crie um CNAME `meu-paquera.pages.dev`).
-4. SSL automático, gratuito.
-
----
-
-## 🛠️ Como personalizar
-
-### Trocar fotos de perfil
-Substitua os arquivos em `assets/profiles/profile-01.jpg` … `profile-12.jpg` (mantenha os nomes) ou edite `js/data.js` apontando para novas imagens.
-
-### Editar perfis
-Abra `js/data.js` e edite o array `PERFIS` (nome, idade, cidade, bio, interesses, foto).
-
-### Cores e identidade
-Em `css/style.css`, ajuste as variáveis no topo:
-```css
-:root {
-  --primary: #ff4d6d;   /* cor principal */
-  --accent: #ff8a5c;    /* cor de destaque */
-  --gradient: linear-gradient(135deg, #ff4d6d 0%, #ff8a5c 100%);
-}
-```
-
-### Nome do app
-Busque por `Paquera` em `index.html` e substitua pelo nome do seu projeto.
-
----
-
-## ⚠️ Aviso importante — Produção
-
-Esta é uma **demonstração frontend** com dados simulados:
-
-- ✅ Login/cadastro: simulado (salvo no navegador)
-- ✅ Matches e chat: simulados (respostas automáticas)
-- ❌ Não tem backend, contas reais nem mensagens entre usuários reais
-
-**Para virar um produto real**, adicione um backend. Opções recomendadas:
-- **Supabase** (PostgreSQL + Auth + Realtime) — ideal para chat
-- **Firebase** (Auth + Firestore)
-- **Node.js + PostgreSQL** próprio
-
-O frontend já está estruturado para isso: basta trocar as funções em `js/app.js` (que usam `localStorage`) por chamadas de API (`fetch`).
-
----
-
-## 🔒 Segurança e privacidade (para produção)
-
-- Autenticação real (e-mail/senha, Google, Apple)
-- Verificação de foto (moderação)
-- Denúncia e bloqueio de usuários
-- Criptografia de mensagens
-- Conformidade com LGPD (termos de uso + política de privacidade)
-- Proibição de menores de 18 anos
-
----
-
-## 📄 Licença
-
-Use e abuse como base para seu projeto. Perfis e fotos são fictícios para demonstração.
-
-Feito com ❤️ no Brasil.
+O frontend não possui integração pronta com Supabase, Firebase ou API própria. Decida a infraestrutura e os requisitos de dados antes de conectar serviços.
