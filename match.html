@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Matches — Paquera 💛</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">💘 PAQUERA</div>
+    <nav>
+      <a href="buscar.html">Explorar</a>
+      <a href="match.html" style="color:#FFD700;">Meus Matches</a>
+      <a href="perfil.html">Meu Perfil</a>
+      <button id="btnSair" class="btn-contorno" style="padding:0.5rem 1.2rem;margin-left:0.5rem;">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <h1 style="text-align:center;margin-top:2rem;">💛 Seus Matches</h1>
+    <p id="aviso" style="text-align:center;color:#F7E7CE;margin-top:1rem;">Carregando...</p>
+    
+    <div id="gradeMatches" class="cartoes oculto"></div>
+    
+    <p id="semMatches" class="oculto" style="text-align:center;color:rgba(247,231,206,0.7);margin-top:3rem;">
+      Ainda não tem nenhum match 💔<br>Continue explorando e dê curtidas!
+    </p>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/match.js"></script>
+</body>
+</html>

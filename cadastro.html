@@ -3,27 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Conta — Paquera 💘</title>
+  <title>Criar Conta — Paquera 💛</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header><div class="logo">💘 Paquera</div><nav><a href="index.html">Voltar</a></nav></header>
+  <header>
+    <div class="logo">💘 PAQUERA</div>
+    <nav>
+      <a href="index.html">Início</a>
+    </nav>
+  </header>
+
   <form id="formCadastro">
-    <h2>Criar sua conta</h2>
-    <input type="text" id="nome" placeholder="Seu nome" required>
-    <input type="email" id="email" placeholder="Seu e-mail" required>
-    <input type="password" id="senha" placeholder="Criar senha" required>
-    <input type="number" id="idade" placeholder="Idade">
-    <input type="text" id="cidade" placeholder="Cidade">
-    <select id="genero" style="width:100%;padding:0.9rem;margin:0.5rem 0;border:1px solid #f0c8d8;border-radius:8px;">
-      <option value="">Seu gênero</option>
+    <h2>Encontre alguém especial ✨</h2>
+    <input type="text" id="nome" placeholder="Seu nome completo" required>
+    <input type="email" id="email" placeholder="Seu melhor e-mail" required>
+    <input type="password" id="senha" placeholder="Crie uma senha (mínimo 6 caracteres)" required>
+    <input type="number" id="idade" placeholder="Sua idade">
+    <input type="text" id="cidade" placeholder="Cidade onde mora">
+    <select id="genero">
+      <option value="">Com qual gênero você se identifica?</option>
       <option value="masculino">Masculino</option>
       <option value="feminino">Feminino</option>
       <option value="outro">Outro</option>
     </select>
-    <textarea id="interesses" placeholder="Fale sobre você e o que busca..." rows="3"></textarea>
-    <button type="submit">Criar Conta 🎉</button>
+    <textarea id="interesses" placeholder="Fale sobre você e o que busca... 💛" rows="4"></textarea>
+    <button type="submit" class="btn btn-dourado" style="width:100%;margin-top:0.5rem;">Criar Conta 🎉</button>
+    <p style="text-align:center;margin-top:1.5rem;color:rgba(247,231,206,0.7);">
+      Já tem conta? <a href="login.html" style="color:#FFD700;text-decoration:none;font-weight:bold;">Entrar</a>
+    </p>
   </form>
+
   <script src="js/auth.js"></script>
 </body>
 </html>
