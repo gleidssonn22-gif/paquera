@@ -76,6 +76,15 @@ Este protótipo **não** possui contas/autenticação reais, banco de dados, men
 
 O frontend não possui integração pronta com Supabase, Firebase ou API própria. Decida a infraestrutura e os requisitos de dados antes de conectar serviços.
 
+## Experiência do app
+
+- Descobrir com arraste, botões ou teclado (`←` pular, `→` curtir, `↑` destaque, `Z` desfazer) e contador de perfis restantes.
+- Interesses em comum destacados nos cards e no detalhe do perfil.
+- Desfazer a última curtida ou pulo (inclui desfazer um match).
+- Sugestões para quebrar o gelo em conversas novas.
+- Layout responsivo: barra inferior no celular e navegação no topo no computador.
+- Fotos de exemplo otimizadas (800 px) para carregar rápido.
+
 ## Servidor opcional (`server.js`)
 
 O protótipo não depende dele. Para rodar a API de teste (banco em memória, tudo se perde ao reiniciar):

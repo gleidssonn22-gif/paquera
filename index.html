@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Paquera — protótipo de demonstração de site de relacionamentos. Perfis e conversas são fictícios.">
+  <meta name="theme-color" content="#120D09">
+  <meta property="og:title" content="Paquera — Encontre alguém especial">
+  <meta property="og:description" content="Demonstração interativa de um site de relacionamentos para maiores de 18 anos.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%98%3C/text%3E%3C/svg%3E">
   <title>Paquera — Encontre alguém especial 💛</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,11 +17,12 @@
   <!-- ===== Landing ===== -->
   <div id="landing">
     <header class="top-bar">
-      <div class="logo">💘 PAQUERA</div>
+      <div class="logo">💘 Paquera</div>
       <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
       <nav class="nav-links" aria-label="Principal">
+        <a href="#como-funciona">Como funciona</a>
         <a href="#recursos">Recursos</a>
-        <a href="#" onclick="openInfo('safety');return false;">Segurança</a>
+        <a href="#seguranca">Segurança</a>
         <a href="#" onclick="openAuth('login');return false;">Entrar</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="openAuth('signup');return false;">Criar perfil</a>
       </nav>
@@ -24,11 +30,24 @@
 
     <main>
       <section class="hero">
-        <h1>Encontre o amor com brilho ✨</h1>
-        <p class="subtitle">Demonstração interativa de um site de relacionamentos. Os perfis são fictícios; nada é enviado a outras pessoas.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary btn-lg" type="button" onclick="openAuth('signup')">Começar agora 🎉</button>
-          <button class="btn btn-outline btn-lg" type="button" onclick="openAuth('login')">Já tenho perfil de teste</button>
+        <div class="hero-text">
+          <span class="eyebrow">Demonstração · 18+</span>
+          <h1>Encontros que começam com uma boa conversa</h1>
+          <p class="subtitle">Descubra perfis, dê match e converse. Esta é uma demonstração interativa: os perfis são fictícios e tudo fica salvo apenas no seu navegador.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" type="button" onclick="openAuth('signup')">Começar agora</button>
+            <button class="btn btn-outline btn-lg" type="button" onclick="openAuth('login')">Já tenho perfil de teste</button>
+          </div>
+          <ul class="hero-points">
+            <li>✓ Sem e-mail e sem senha</li>
+            <li>✓ Dados apagáveis a qualquer momento</li>
+            <li>✓ Apenas para maiores de 18 anos</li>
+          </ul>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <figure class="hero-card hc-1"><img src="assets/profiles/profile-05.jpg" alt="" width="800" height="1066"><figcaption>Beatriz, 28</figcaption></figure>
+          <figure class="hero-card hc-2"><img src="assets/profiles/profile-02.jpg" alt="" width="800" height="1066"><figcaption>Pedro, 29</figcaption></figure>
+          <figure class="hero-card hc-3"><img src="assets/profiles/profile-01.jpg" alt="" width="800" height="1066"><figcaption>Larissa, 26 <span class="hc-pill">♥ Match</span></figcaption></figure>
         </div>
       </section>
 
@@ -37,13 +56,40 @@
         <div id="ad-landing-content"></div>
       </aside>
 
-      <section id="recursos" class="features">
-        <article><h3>💛 Perfis de exemplo</h3><p>Dez perfis fictícios para explorar o fluxo de curtir e pular.</p></article>
-        <article><h3>💬 Conversas simuladas</h3><p>Respostas automáticas mostram como ficaria o chat.</p></article>
-        <article><h3>✨ Filtros</h3><p>Idade, distância, cidade e interesses.</p></article>
-        <article><h3>🔒 Dados locais</h3><p>Tudo fica no seu navegador e pode ser apagado a qualquer momento.</p></article>
-        <article><h3>🛡️ Bloquear e denunciar</h3><p>Ações de demonstração, sem envio a uma equipe.</p></article>
-        <article><h3>🔞 Somente 18+</h3><p>A demonstração exige confirmação de maioridade.</p></article>
+      <section id="como-funciona" class="section">
+        <h2 class="section-heading">Como funciona</h2>
+        <ol class="steps">
+          <li><span class="step-n">1</span><h3>Crie seu perfil</h3><p>Nome, idade, cidade e o que você quer ver. Leva menos de um minuto.</p></li>
+          <li><span class="step-n">2</span><h3>Descubra pessoas</h3><p>Arraste os cards ou use as setas do teclado para curtir ou pular.</p></li>
+          <li><span class="step-n">3</span><h3>Converse no match</h3><p>Quando houver match, quebre o gelo com uma das sugestões de mensagem.</p></li>
+        </ol>
+      </section>
+
+      <section id="recursos" class="section">
+        <h2 class="section-heading">Tudo para conhecer alguém</h2>
+        <div class="features">
+          <article><span class="f-ico">💛</span><h3>Perfis de exemplo</h3><p>Doze perfis fictícios para testar o fluxo de curtir e pular.</p></article>
+          <article><span class="f-ico">★</span><h3>Interesses em comum</h3><p>Veja de cara o que você e a outra pessoa têm em comum.</p></article>
+          <article><span class="f-ico">💬</span><h3>Conversas simuladas</h3><p>Respostas automáticas mostram como seria o chat.</p></article>
+          <article><span class="f-ico">🎯</span><h3>Filtros</h3><p>Idade, distância, cidade e interesses.</p></article>
+          <article><span class="f-ico">↩</span><h3>Desfazer</h3><p>Curtiu ou pulou sem querer? Volte um passo.</p></article>
+          <article><span class="f-ico">⌨</span><h3>Atalhos</h3><p>Use ←, → e ↑ para navegar rápido pelo computador.</p></article>
+        </div>
+      </section>
+
+      <section id="seguranca" class="section safety">
+        <h2 class="section-heading">Segurança em primeiro lugar</h2>
+        <div class="safety-grid">
+          <div><h3>🔞 Somente 18+</h3><p>A demonstração exige a confirmação de maioridade.</p></div>
+          <div><h3>🛡️ Bloquear e denunciar</h3><p>Ações disponíveis em todo perfil. Nesta demonstração ficam só no seu navegador.</p></div>
+          <div><h3>🔒 Seus dados, seu controle</h3><p>Nada é enviado a servidores. Apague tudo em Meu perfil.</p></div>
+        </div>
+        <p class="safety-tip">Dica real de segurança: marque os primeiros encontros em lugares públicos e avise alguém de confiança.</p>
+      </section>
+
+      <section class="section final-cta">
+        <h2 class="section-heading">Pronto para testar?</h2>
+        <button class="btn btn-primary btn-lg" type="button" onclick="openAuth('signup')">Criar perfil de teste</button>
       </section>
     </main>
 
@@ -58,12 +104,12 @@
   <!-- ===== Aplicativo ===== -->
   <div id="app">
     <header class="top-bar">
-      <div class="logo">💘 PAQUERA</div>
+      <div class="logo">💘 Paquera</div>
       <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
       <nav class="nav-links" aria-label="Aplicativo">
-        <a href="#" onclick="navigate('discover');return false;">Descobrir</a>
-        <a href="#" onclick="navigate('matches');return false;">Matches</a>
-        <a href="#" onclick="navigate('me');return false;">Meu perfil</a>
+        <a href="#" data-view="discover" onclick="navigate('discover');return false;">Descobrir</a>
+        <a href="#" data-view="matches" onclick="navigate('matches');return false;">Matches <i id="nav-badge" class="badge-inline" style="display:none"></i></a>
+        <a href="#" data-view="me" onclick="navigate('me');return false;">Meu perfil</a>
         <a href="#" onclick="openInfo('privacy');return false;">Privacidade</a>
         <a href="#" onclick="openInfo('safety');return false;">Segurança</a>
         <a href="#" onclick="openAdSettings();return false;">Anúncios</a>
@@ -74,12 +120,15 @@
     <main class="app-main">
       <section id="view-discover" class="view">
         <div id="filter-bar" class="filter-bar"></div>
+        <p id="deck-count" class="deck-count" aria-live="polite"></p>
         <div id="card-stack" class="card-stack"></div>
         <div id="swipe-actions" class="swipe-actions">
-          <button type="button" class="round-btn nope" onclick="swipe('nope')" aria-label="Pular">✕</button>
-          <button type="button" class="round-btn super" onclick="swipe('super')" aria-label="Curtir com destaque">★</button>
-          <button type="button" class="round-btn like" onclick="swipe('like')" aria-label="Curtir">♥</button>
+          <button type="button" id="undo-btn" class="round-btn undo" onclick="undoSwipe()" aria-label="Desfazer última ação" title="Desfazer (Z)" disabled>↩</button>
+          <button type="button" class="round-btn nope" onclick="swipe('nope')" aria-label="Pular" title="Pular (←)">✕</button>
+          <button type="button" class="round-btn super" onclick="swipe('super')" aria-label="Curtir com destaque" title="Destaque (↑)">★</button>
+          <button type="button" class="round-btn like" onclick="swipe('like')" aria-label="Curtir" title="Curtir (→)">♥</button>
         </div>
+        <p class="kbd-hint">Atalhos: <kbd>←</kbd> pular · <kbd>→</kbd> curtir · <kbd>↑</kbd> destaque · <kbd>Z</kbd> desfazer</p>
         <aside class="ad-region" data-ad-placement="discover" hidden aria-label="Publicidade">
           <small>Publicidade</small>
           <div id="ad-discover-content"></div>

@@ -13,7 +13,8 @@ const LS = {
   unread: 'paquera_unread',
   filters: 'paquera_filters',
   blocked: 'paquera_blocked',
-  reports: 'paquera_reports'
+  reports: 'paquera_reports',
+  tip: 'paquera_tip'
 };
 
 const state = {
@@ -30,7 +31,9 @@ const state = {
   currentChatId: null,
   deck: [],
   pendingMatch: null,
-  pendingAction: null
+  pendingAction: null,
+  last: null,
+  busy: false
 };
 
 function load(key, fallback) {
@@ -227,6 +230,7 @@ function enterApp() {
   navigate('discover');
   updateMe();
   updateBadge();
+  showTip();
 }
 
 // ---------- Navegação (views) ----------
@@ -234,9 +238,12 @@ function navigate(view, param) {
   state.currentView = view;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#app .nav-links a[data-view]').forEach(a => a.classList.remove('active'));
   const bnMap = { discover: 'discover', matches: 'matches', me: 'me', chat: 'matches', profile: 'discover' };
   const bn = document.querySelector(`.bn-item[data-view="${bnMap[view] || 'discover'}"]`);
   if (bn) bn.classList.add('active');
+  const topLink = document.querySelector(`#app .nav-links a[data-view="${bnMap[view] || 'discover'}"]`);
+  if (topLink) topLink.classList.add('active');
 
   if (view === 'discover') { $('view-discover').classList.add('active'); renderDeck(); }
   else if (view === 'matches') { $('view-matches').classList.add('active'); renderMatches(); }
@@ -313,6 +320,8 @@ function renderDeck() {
   const stack = $('card-stack');
   const actions = $('swipe-actions');
   state.deck = filteredProfiles();
+  $('deck-count').textContent = state.deck.length === 1 ? '1 perfil restante' : `${state.deck.length} perfis restantes`;
+  $('undo-btn').disabled = !state.last;
   if (state.deck.length === 0) {
     actions.style.display = 'none';
     stack.innerHTML = `
@@ -330,11 +339,20 @@ function renderDeck() {
   stack.innerHTML = top3.map((p, i) => cardHTML(p, i)).join('');
   attachSwipe(stack.firstElementChild, state.deck[0]);
 }
+function commonInterests(p) {
+  const mine = (state.user && state.user.interesses) || [];
+  return p.interesses.filter(i => mine.includes(i));
+}
+function sortedTags(p) {
+  const common = commonInterests(p);
+  return [...common, ...p.interesses.filter(i => !common.includes(i))].map(i => ({ name: i, common: common.includes(i) }));
+}
 function cardHTML(p, idx) {
+  const common = commonInterests(p);
   const scale = 1 - idx * 0.04, y = idx * 10;
   return `
     <article class="swipe-card" data-id="${p.id}" tabindex="0" role="button" aria-label="Ver perfil de ${esc(p.nome)}, ${p.idade} anos" style="transform: translateY(${y}px) scale(${scale}); z-index: ${10 - idx};">
-      <img src="${p.foto}" alt="${esc(p.nome)}" draggable="false" />
+      <img src="${p.foto}" alt="${esc(p.nome)}" draggable="false" decoding="async" />
       <div class="sc-overlay"></div>
       <div class="swipe-stamp stamp-like">Curti</div>
       <div class="swipe-stamp stamp-nope">Não</div>
@@ -342,7 +360,7 @@ function cardHTML(p, idx) {
         <h3>${esc(p.nome)}, <span>${p.idade}</span></h3>
         <div class="sc-meta">📍 ${esc(p.cidade)} · ${p.distancia} km · 💼 ${esc(p.trabalho)}</div>
         <div class="sc-bio">${esc(p.bio)}</div>
-        <div class="sc-tags">${p.interesses.slice(0, 4).map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
+        <div class="sc-tags">${common.length ? `<span class="tag tag-common">★ ${common.length} em comum</span>` : ''}${sortedTags(p).slice(0, common.length ? 3 : 4).map(t => `<span class="tag ${t.common ? 'tag-common' : ''}">${esc(t.name)}</span>`).join('')}</div>
       </div>
     </article>`;
 }
@@ -408,6 +426,8 @@ function swipe(action) {
 }
 
 function doSwipe(perfil, action, card) {
+  if (state.busy) return;
+  state.busy = true;
   if (action === 'like' || action === 'super') {
     state.likes.push(perfil.id);
     // Animação de saída
@@ -421,7 +441,9 @@ function doSwipe(perfil, action, card) {
       state.unread[perfil.id] = (state.unread[perfil.id] || 0) + 1;
       state.pendingMatch = perfil;
     }
+    state.last = { id: perfil.id, action, match: isMatch };
     setTimeout(() => {
+      state.busy = false;
       persistAll(); updateBadge(); updateMe(); renderDeck();
       if (isMatch) showMatchModal(perfil);
     }, 320);
@@ -429,8 +451,42 @@ function doSwipe(perfil, action, card) {
     state.nopes.push(perfil.id);
     card.style.transform = 'translate(-500px, -60px) rotate(-30deg)';
     card.style.opacity = '0';
-    setTimeout(() => { persistAll(); renderDeck(); }, 320);
+    state.last = { id: perfil.id, action: 'nope', match: false };
+    setTimeout(() => { state.busy = false; persistAll(); renderDeck(); }, 320);
   }
+}
+
+function undoSwipe() {
+  const last = state.last;
+  if (!last || state.busy) { showToast('Nada para desfazer'); return; }
+  state.likes = state.likes.filter(id => id !== last.id);
+  state.nopes = state.nopes.filter(id => id !== last.id);
+  if (last.match) {
+    state.matches = state.matches.filter(m => m.id !== last.id);
+    delete state.unread[last.id];
+  }
+  state.last = null;
+  persistAll(); updateBadge(); updateMe(); renderDeck();
+  showToast('Ação desfeita');
+}
+
+// Atalhos de teclado no Descobrir: ← pular, → curtir, ↑ destaque, Z desfazer
+document.addEventListener('keydown', e => {
+  if (!$('app').classList.contains('active') || state.currentView !== 'discover') return;
+  if (document.querySelector('dialog[open], .overlay.active')) return;
+  if (e.target.closest && e.target.closest('input, textarea, select')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const key = e.key.toLowerCase();
+  if (key === 'arrowleft') { e.preventDefault(); swipe('nope'); }
+  else if (key === 'arrowright') { e.preventDefault(); swipe('like'); }
+  else if (key === 'arrowup') { e.preventDefault(); swipe('super'); }
+  else if (key === 'z') { undoSwipe(); }
+});
+
+function showTip() {
+  if (load(LS.tip, false)) return;
+  save(LS.tip, true);
+  setTimeout(() => showToast('Dica: arraste os cards ou use as setas ← → do teclado'), 700);
 }
 
 // ---------- Match modal ----------
@@ -440,6 +496,22 @@ function showMatchModal(perfil) {
     <img src="${state.user.avatar}" alt="Você" />
     <img src="${perfil.foto}" alt="${esc(perfil.nome)}" />`;
   $('match-modal').classList.add('active');
+  burstHearts();
+}
+function burstHearts() {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const box = document.querySelector('#match-modal .modal');
+  if (!box) return;
+  for (let i = 0; i < 16; i++) {
+    const h = document.createElement('span');
+    h.className = 'heart-burst';
+    h.textContent = ['💛', '💘', '✨', '💖'][i % 4];
+    h.style.left = (8 + Math.random() * 84) + '%';
+    h.style.animationDelay = (Math.random() * 0.5) + 's';
+    h.style.fontSize = (14 + Math.random() * 18) + 'px';
+    box.appendChild(h);
+    setTimeout(() => h.remove(), 2400);
+  }
 }
 function closeMatch() { $('match-modal').classList.remove('active'); state.pendingMatch = null; }
 function closeMatchAndChat() {
@@ -473,7 +545,8 @@ function renderProfileDetail(id) {
         </div>
         <div class="pd-section">
           <h4>Interesses</h4>
-          <div class="pd-interesses">${p.interesses.map(i => `<span class="tag">${esc(i)}</span>`).join('')}</div>
+          ${commonInterests(p).length ? `<p class="pd-common">★ Vocês têm ${commonInterests(p).length} ${commonInterests(p).length === 1 ? 'interesse' : 'interesses'} em comum</p>` : ''}
+          <div class="pd-interesses">${sortedTags(p).map(t => `<span class="tag ${t.common ? 'tag-common' : ''}">${esc(t.name)}</span>`).join('')}</div>
         </div>
       </div>
       <div class="pd-actions">
@@ -516,6 +589,7 @@ function quickLike(id) {
   const p = perfilById(id);
   state.likes.push(id);
   const isMatch = Math.random() < 0.55;
+  state.last = { id, action: 'like', match: isMatch };
   if (isMatch) {
     state.matches.unshift({ id, ts: Date.now(), isNew: true });
     state.unread[id] = (state.unread[id] || 0) + 1;
@@ -584,9 +658,25 @@ function openChat(id) {
 function renderMessages() {
   const box = $('chat-messages');
   const chat = state.chats[state.currentChatId] || [];
+  if (!chat.length) {
+    const p = perfilById(state.currentChatId);
+    const ideas = [
+      `Oi, ${p.nome}! Vi que você curte ${p.interesses[0]}. Qual seu lugar favorito?`,
+      'Oi! Qual foi a melhor coisa do seu dia até agora?',
+      'Café, praia ou cinema: qual seria o nosso primeiro encontro?'
+    ];
+    box.innerHTML = `<div class="icebreakers"><p>Quebre o gelo com uma sugestão:</p>${ideas.map(t =>
+      `<button type="button" class="icebreaker" data-text="${esc(t)}" onclick="useIcebreaker(this)">${esc(t)}</button>`).join('')}</div>`;
+    return;
+  }
   box.innerHTML = chat.map(m => `
     <div class="msg ${m.from}">${esc(m.text)}<span class="msg-time">${fmtTime(m.ts)}</span></div>`).join('');
   box.scrollTop = box.scrollHeight;
+}
+function useIcebreaker(el) {
+  const input = $('chat-input-field');
+  input.value = el.dataset.text;
+  input.focus();
 }
 function sendMessage() {
   const input = $('chat-input-field');
@@ -690,9 +780,11 @@ function saveProfile() {
 // ---------- Badge ----------
 function updateBadge() {
   const total = Object.values(state.unread).reduce((a, b) => a + b, 0) + state.matches.filter(m => m.isNew).length;
-  const badge = $('bn-badge');
-  if (total > 0) { badge.style.display = 'flex'; badge.textContent = total; }
-  else badge.style.display = 'none';
+  [$('bn-badge'), $('nav-badge')].forEach(badge => {
+    if (!badge) return;
+    if (total > 0) { badge.style.display = 'inline-flex'; badge.textContent = total; }
+    else badge.style.display = 'none';
+  });
 }
 
 // ---------- Init ----------
