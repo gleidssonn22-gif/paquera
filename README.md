@@ -27,17 +27,17 @@ js/ads-config.js
 js/monetization.js
 assets/profiles/
 ads.txt
-sw.js            (service worker da Monetag; só tem efeito se você o registrar)
+sw.js            (service worker da Monetag, zona de push 12164524; precisa também do snippet de push do painel para funcionar)
 server.js        (opcional: API Express + Socket.IO, não usada pelo protótipo)
 .env.example     (modelo de variáveis para o servidor opcional)
 ```
 
 ## Preparar anúncios
 
-Os espaços de publicidade são ocultados e nenhum script de anúncios é carregado por padrão. Para configurar:
+A tag da Monetag fica fixa no `<head>`. Os demais parceiros (Google) ficam desligados e só carregam após consentimento. Para configurar:
 
 1. Abra `js/ads-config.js` e preencha o ID de editor do Google AdSense (`ca-pub-...`) e os IDs das unidades para `landing` e/ou `discover`, conforme exibidos no seu painel.
-2. Para Monetag, configure a URL HTTPS do script e o ID do contêiner **ou** o ID da zona (`zone`, para tags no formato `tag.min.js` com `data-zone`) copiados do painel oficial, além do posicionamento `landing` ou `discover`. A tag da zona 304192 já está configurada em `js/ads-config.js` e só carrega após o consentimento. Não cole tags diretamente no `index.html` e não use códigos de terceiros que não reconheça.
+2. Para Monetag, configure a URL HTTPS do script e o ID do contêiner **ou** o ID da zona (`zone`, para tags no formato `tag.min.js` com `data-zone`) copiados do painel oficial, além do posicionamento `landing` ou `discover`. A tag da zona 304192 está fixa no `<head>` do `index.html` (a Monetag verifica o site por ali) e carrega para todos os visitantes, sem consentimento prévio; por isso `monetag` fica vazio em `js/ads-config.js`. O aviso de privacidade do app informa isso. Não use códigos de terceiros que não reconheça.
 3. Configure um parceiro por posicionamento para evitar sobreposição entre anúncios.
 4. Publique em um domínio controlado por você, conclua a verificação/aprovação de cada rede e faça os ajustes de `ads.txt` exigidos por cada painel antes de ativar anúncios.
 5. Revise as políticas dos parceiros, a política de privacidade e os requisitos legais aplicáveis. Para visitantes do EEE, Reino Unido ou Suíça, use uma CMP certificada pelo Google quando exigido pelas regras do AdSense.

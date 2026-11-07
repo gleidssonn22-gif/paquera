@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Paquera — protótipo de demonstração de site de relacionamentos. Perfis e conversas são fictícios.">
   <meta name="theme-color" content="#120D09">
+  <!-- Monetag (zona 304192): tag fixa no <head>, necessária para verificação do site e exibição dos anúncios -->
+  <script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script>
   <meta property="og:title" content="Paquera — Encontre alguém especial">
   <meta property="og:description" content="Demonstração interativa de um site de relacionamentos para maiores de 18 anos.">
   <meta property="og:type" content="website">
@@ -82,7 +84,7 @@
         <div class="safety-grid">
           <div><h3>🔞 Somente 18+</h3><p>A demonstração exige a confirmação de maioridade.</p></div>
           <div><h3>🛡️ Bloquear e denunciar</h3><p>Ações disponíveis em todo perfil. Nesta demonstração ficam só no seu navegador.</p></div>
-          <div><h3>🔒 Seus dados, seu controle</h3><p>Nada é enviado a servidores. Apague tudo em Meu perfil.</p></div>
+          <div><h3>🔒 Seus dados, seu controle</h3><p>Seu perfil de teste fica só no navegador e você apaga tudo em Meu perfil. Parceiros de anúncios podem tratar dados técnicos, como o IP.</p></div>
         </div>
         <p class="safety-tip">Dica real de segurança: marque os primeiros encontros em lugares públicos e avise alguém de confiança.</p>
       </section>
@@ -292,7 +294,7 @@
   <dialog id="ad-settings-dialog">
     <form onsubmit="saveAdSettings(event)">
       <h2>Preferências de anúncios</h2>
-      <p>Se houver anúncios configurados, os scripts de parceiros só são carregados com a sua permissão.</p>
+      <p>Os anúncios da Monetag são carregados ao abrir o site. Se houver anúncios do Google configurados, eles só carregam com a sua permissão.</p>
       <label class="check">
         <input id="allow-ad-partners" type="checkbox">
         <span>Permitir scripts de parceiros de publicidade</span>
