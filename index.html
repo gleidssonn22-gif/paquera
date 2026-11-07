@@ -1,1 +1,323 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script></head><body><h1>Clubewins</h1></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Paquera — protótipo de demonstração de site de relacionamentos. Perfis e conversas são fictícios.">
+  <meta name="theme-color" content="#120D09">
+  <meta property="og:title" content="Paquera — Encontre alguém especial">
+  <meta property="og:description" content="Demonstração interativa de um site de relacionamentos para maiores de 18 anos.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%98%3C/text%3E%3C/svg%3E">
+  <title>Paquera — Encontre alguém especial 💛</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Landing ===== -->
+  <div id="landing">
+    <header class="top-bar">
+      <div class="logo">💘 Paquera</div>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#seguranca">Segurança</a>
+        <a href="#" onclick="openAuth('login');return false;">Entrar</a>
+        <a href="#" class="btn btn-primary btn-sm" onclick="openAuth('signup');return false;">Criar perfil</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-text">
+          <span class="eyebrow">Demonstração · 18+</span>
+          <h1>Encontros que começam com uma boa conversa</h1>
+          <p class="subtitle">Descubra perfis, dê match e converse. Esta é uma demonstração interativa: os perfis são fictícios e tudo fica salvo apenas no seu navegador.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" type="button" onclick="openAuth('signup')">Começar agora</button>
+            <button class="btn btn-outline btn-lg" type="button" onclick="openAuth('login')">Já tenho perfil de teste</button>
+          </div>
+          <ul class="hero-points">
+            <li>✓ Sem e-mail e sem senha</li>
+            <li>✓ Dados apagáveis a qualquer momento</li>
+            <li>✓ Apenas para maiores de 18 anos</li>
+          </ul>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <figure class="hero-card hc-1"><img src="assets/profiles/profile-05.jpg" alt="" width="800" height="1066"><figcaption>Beatriz, 28</figcaption></figure>
+          <figure class="hero-card hc-2"><img src="assets/profiles/profile-02.jpg" alt="" width="800" height="1066"><figcaption>Pedro, 29</figcaption></figure>
+          <figure class="hero-card hc-3"><img src="assets/profiles/profile-01.jpg" alt="" width="800" height="1066"><figcaption>Larissa, 26 <span class="hc-pill">♥ Match</span></figcaption></figure>
+        </div>
+      </section>
+
+      <aside class="ad-region" data-ad-placement="landing" hidden aria-label="Publicidade">
+        <small>Publicidade</small>
+        <div id="ad-landing-content"></div>
+      </aside>
+
+      <section id="como-funciona" class="section">
+        <h2 class="section-heading">Como funciona</h2>
+        <ol class="steps">
+          <li><span class="step-n">1</span><h3>Crie seu perfil</h3><p>Nome, idade, cidade e o que você quer ver. Leva menos de um minuto.</p></li>
+          <li><span class="step-n">2</span><h3>Descubra pessoas</h3><p>Arraste os cards ou use as setas do teclado para curtir ou pular.</p></li>
+          <li><span class="step-n">3</span><h3>Converse no match</h3><p>Quando houver match, quebre o gelo com uma das sugestões de mensagem.</p></li>
+        </ol>
+      </section>
+
+      <section id="recursos" class="section">
+        <h2 class="section-heading">Tudo para conhecer alguém</h2>
+        <div class="features">
+          <article><span class="f-ico">💛</span><h3>Perfis de exemplo</h3><p>Doze perfis fictícios para testar o fluxo de curtir e pular.</p></article>
+          <article><span class="f-ico">★</span><h3>Interesses em comum</h3><p>Veja de cara o que você e a outra pessoa têm em comum.</p></article>
+          <article><span class="f-ico">💬</span><h3>Conversas simuladas</h3><p>Respostas automáticas mostram como seria o chat.</p></article>
+          <article><span class="f-ico">🎯</span><h3>Filtros</h3><p>Idade, distância, cidade e interesses.</p></article>
+          <article><span class="f-ico">↩</span><h3>Desfazer</h3><p>Curtiu ou pulou sem querer? Volte um passo.</p></article>
+          <article><span class="f-ico">⌨</span><h3>Atalhos</h3><p>Use ←, → e ↑ para navegar rápido pelo computador.</p></article>
+        </div>
+      </section>
+
+      <section id="seguranca" class="section safety">
+        <h2 class="section-heading">Segurança em primeiro lugar</h2>
+        <div class="safety-grid">
+          <div><h3>🔞 Somente 18+</h3><p>A demonstração exige a confirmação de maioridade.</p></div>
+          <div><h3>🛡️ Bloquear e denunciar</h3><p>Ações disponíveis em todo perfil. Nesta demonstração ficam só no seu navegador.</p></div>
+          <div><h3>🔒 Seus dados, seu controle</h3><p>Nada é enviado a servidores. Apague tudo em Meu perfil.</p></div>
+        </div>
+        <p class="safety-tip">Dica real de segurança: marque os primeiros encontros em lugares públicos e avise alguém de confiança.</p>
+      </section>
+
+      <section class="section final-cta">
+        <h2 class="section-heading">Pronto para testar?</h2>
+        <button class="btn btn-primary btn-lg" type="button" onclick="openAuth('signup')">Criar perfil de teste</button>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a href="#" onclick="openInfo('terms');return false;">Termos</a>
+      <a href="#" onclick="openInfo('privacy');return false;">Privacidade</a>
+      <a href="#" onclick="openInfo('safety');return false;">Segurança</a>
+      <a href="#" onclick="openAdSettings();return false;">Preferências de anúncios</a>
+    </footer>
+  </div>
+
+  <!-- ===== Aplicativo ===== -->
+  <div id="app">
+    <header class="top-bar">
+      <div class="logo">💘 Paquera</div>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" onclick="toggleMenu()">☰</button>
+      <nav class="nav-links" aria-label="Aplicativo">
+        <a href="#" data-view="discover" onclick="navigate('discover');return false;">Descobrir</a>
+        <a href="#" data-view="matches" onclick="navigate('matches');return false;">Matches <i id="nav-badge" class="badge-inline" style="display:none"></i></a>
+        <a href="#" data-view="me" onclick="navigate('me');return false;">Meu perfil</a>
+        <a href="#" onclick="openInfo('privacy');return false;">Privacidade</a>
+        <a href="#" onclick="openInfo('safety');return false;">Segurança</a>
+        <a href="#" onclick="openAdSettings();return false;">Anúncios</a>
+        <a href="#" onclick="logout();return false;">Sair</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section id="view-discover" class="view">
+        <div id="filter-bar" class="filter-bar"></div>
+        <p id="deck-count" class="deck-count" aria-live="polite"></p>
+        <div id="card-stack" class="card-stack"></div>
+        <div id="swipe-actions" class="swipe-actions">
+          <button type="button" id="undo-btn" class="round-btn undo" onclick="undoSwipe()" aria-label="Desfazer última ação" title="Desfazer (Z)" disabled>↩</button>
+          <button type="button" class="round-btn nope" onclick="swipe('nope')" aria-label="Pular" title="Pular (←)">✕</button>
+          <button type="button" class="round-btn super" onclick="swipe('super')" aria-label="Curtir com destaque" title="Destaque (↑)">★</button>
+          <button type="button" class="round-btn like" onclick="swipe('like')" aria-label="Curtir" title="Curtir (→)">♥</button>
+        </div>
+        <p class="kbd-hint">Atalhos: <kbd>←</kbd> pular · <kbd>→</kbd> curtir · <kbd>↑</kbd> destaque · <kbd>Z</kbd> desfazer</p>
+        <aside class="ad-region" data-ad-placement="discover" hidden aria-label="Publicidade">
+          <small>Publicidade</small>
+          <div id="ad-discover-content"></div>
+        </aside>
+      </section>
+
+      <section id="view-profile" class="view">
+        <div id="profile-detail-content"></div>
+      </section>
+
+      <section id="view-matches" class="view">
+        <h2 class="section-title">Matches novos</h2>
+        <div id="new-matches-list" class="new-matches"></div>
+        <h2 class="section-title">Conversas</h2>
+        <div id="conversas-list"></div>
+      </section>
+
+      <section id="view-chat" class="view">
+        <div id="chat-header" class="chat-header"></div>
+        <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+        <div class="chat-input">
+          <input id="chat-input-field" type="text" maxlength="500" placeholder="Escreva uma mensagem…" autocomplete="off">
+          <button type="button" class="btn btn-primary" onclick="sendMessage()">Enviar</button>
+        </div>
+      </section>
+
+      <section id="view-me" class="view">
+        <div class="me-card">
+          <img id="me-avatar" src="assets/profiles/profile-02.jpg" alt="Sua foto de demonstração">
+          <div>
+            <h2 id="me-name"></h2>
+            <p id="me-meta"></p>
+          </div>
+        </div>
+        <div class="stats">
+          <div><b id="stat-likes">0</b><span>Curtidas</span></div>
+          <div><b id="stat-matches">0</b><span>Matches</span></div>
+          <div><b id="stat-msgs">0</b><span>Mensagens</span></div>
+        </div>
+
+        <h3 class="section-title">Foto de exemplo</h3>
+        <div id="avatar-picker" class="avatar-picker"></div>
+
+        <h3 class="section-title">Editar perfil</h3>
+        <div class="edit-form">
+          <label>Nome <input id="edit-name" type="text" maxlength="40"></label>
+          <label>Idade <input id="edit-age" type="number" min="18" max="99"></label>
+          <label>Cidade <input id="edit-city" type="text" maxlength="60"></label>
+          <label>Profissão <input id="edit-job" type="text" maxlength="60"></label>
+          <label>Sobre mim <textarea id="edit-bio" rows="3" maxlength="240"></textarea></label>
+          <label>Quero ver
+            <select id="edit-interest">
+              <option>Todos</option>
+              <option>Mulheres</option>
+              <option>Homens</option>
+              <option>Homens e mulheres</option>
+            </select>
+          </label>
+          <div>
+            <span class="label-text">Interesses (até 6)</span>
+            <div id="interesse-picker" class="ip-picker"></div>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" onclick="saveProfile()">Salvar perfil</button>
+          <button type="button" class="btn btn-ghost btn-block" onclick="clearDemoData()">Apagar meus dados deste navegador</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Seções">
+      <button type="button" class="bn-item" data-view="discover" onclick="navigate('discover')">🔥<span>Descobrir</span></button>
+      <button type="button" class="bn-item" data-view="matches" onclick="navigate('matches')">💬<span>Matches</span><i id="bn-badge" class="badge" style="display:none"></i></button>
+      <button type="button" class="bn-item" data-view="me" onclick="navigate('me')">👤<span>Perfil</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== Autenticação de demonstração ===== -->
+  <div id="auth-overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Entrar ou criar perfil">
+    <div class="modal">
+      <button type="button" class="modal-close" onclick="closeAuth()" aria-label="Fechar">✕</button>
+
+      <div id="auth-login">
+        <h2>Bem-vindo(a) de volta 💛</h2>
+        <p class="hint">Sem e-mail ou senha: é apenas uma demonstração.</p>
+        <label>Seu nome <input id="login-name" type="text" maxlength="40" placeholder="Como quer ser chamado(a)?"></label>
+        <button type="button" class="btn btn-primary btn-block" onclick="doLogin()">Continuar</button>
+        <p class="switch">Primeira vez? <a href="#" onclick="switchAuth('signup');return false;">Criar perfil</a></p>
+      </div>
+
+      <div id="auth-signup" style="display:none">
+        <h2>Criar perfil de teste ✨</h2>
+        <p class="hint">Use apenas informações fictícias.</p>
+        <label>Nome <input id="signup-name" type="text" maxlength="40"></label>
+        <label>Idade <input id="signup-age" type="number" min="18" max="99"></label>
+        <label>Cidade <input id="signup-city" type="text" maxlength="60" placeholder="Ex.: Brasília, DF"></label>
+        <label>Quero ver
+          <select id="signup-interest">
+            <option>Mulheres</option>
+            <option>Homens</option>
+            <option>Homens e mulheres</option>
+          </select>
+        </label>
+        <label class="check">
+          <input id="signup-adult" type="checkbox">
+          <span>Tenho 18 anos ou mais e li os
+            <a href="#" onclick="openInfo('terms');return false;">termos</a> e o
+            <a href="#" onclick="openInfo('privacy');return false;">aviso de privacidade</a>.</span>
+        </label>
+        <button type="button" class="btn btn-primary btn-block" onclick="doSignup()">Criar perfil</button>
+        <p class="switch">Já tem perfil de teste? <a href="#" onclick="switchAuth('login');return false;">Entrar</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Match ===== -->
+  <div id="match-modal" class="overlay" role="dialog" aria-modal="true" aria-label="Deu match">
+    <div class="modal match-box">
+      <h2>É um match! 💘</h2>
+      <div id="match-photos" class="match-photos"></div>
+      <p id="match-text"></p>
+      <button type="button" class="btn btn-primary btn-block" onclick="closeMatchAndChat()">Enviar mensagem</button>
+      <button type="button" class="btn btn-ghost btn-block" onclick="closeMatch()">Continuar descobrindo</button>
+    </div>
+  </div>
+
+  <!-- ===== Diálogos ===== -->
+  <dialog id="info-dialog">
+    <h2 id="info-title"></h2>
+    <div id="info-content"></div>
+    <button type="button" class="btn btn-primary btn-block" onclick="closeDialog('info-dialog')">Fechar</button>
+  </dialog>
+
+  <dialog id="action-dialog">
+    <form onsubmit="confirmAction(event)">
+      <h2 id="action-title"></h2>
+      <p id="action-description"></p>
+      <div id="report-reason-group" hidden>
+        <label>Motivo <input id="report-reason" type="text" maxlength="120"></label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-outline" onclick="closeDialog('action-dialog')">Cancelar</button>
+        <button type="submit" id="action-confirm" class="btn btn-primary">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="filter-dialog">
+    <form onsubmit="applyFilters(event)">
+      <h2>Filtros</h2>
+      <label>Idade mínima <input id="filter-age-min" type="number" min="18" max="99"></label>
+      <label>Idade máxima <input id="filter-age-max" type="number" min="18" max="99"></label>
+      <label>Distância máxima (km) <input id="filter-distance" type="number" min="1" max="500"></label>
+      <label>Cidade <input id="filter-city" type="text" maxlength="60" placeholder="Qualquer cidade"></label>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" onclick="resetFilters()">Limpar</button>
+        <button type="button" class="btn btn-outline" onclick="closeDialog('filter-dialog')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Aplicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="ad-settings-dialog">
+    <form onsubmit="saveAdSettings(event)">
+      <h2>Preferências de anúncios</h2>
+      <p>Se houver anúncios configurados, os scripts de parceiros só são carregados com a sua permissão.</p>
+      <label class="check">
+        <input id="allow-ad-partners" type="checkbox">
+        <span>Permitir scripts de parceiros de publicidade</span>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-outline" onclick="closeDialog('ad-settings-dialog')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="ad-consent-banner" class="consent-banner" role="region" aria-label="Consentimento de anúncios" hidden>
+    <p>Este site pode exibir anúncios de parceiros, que podem usar cookies e dados técnicos do seu navegador.
+       <a href="#" onclick="openInfo('privacy');return false;">Saiba mais</a>.</p>
+    <div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="rejectAdConsent()">Recusar</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="acceptAdConsent()">Aceitar</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ads-config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/monetization.js"></script>
+</body>
+</html>

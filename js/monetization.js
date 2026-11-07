@@ -8,7 +8,7 @@ function hasAdConfiguration() {
   const hasGoogle = /^ca-pub-\d+$/.test(google.publisherId || '') &&
     Object.values(slots).some(slotId => /^\d+$/.test(slotId || ''));
   const monetag = adConfig.monetag || {};
-  return hasGoogle || Boolean(monetag.scriptUrl && monetag.containerId);
+  return hasGoogle || Boolean(monetag.scriptUrl && (monetag.containerId || monetag.zone));
 }
 
 function initMonetization() {
@@ -98,10 +98,12 @@ function loadGoogleAds(google, slots) {
 }
 
 function loadMonetagAd(monetag) {
-  if (!monetag.scriptUrl || !monetag.containerId) return;
+  if (!monetag.scriptUrl || !(monetag.containerId || monetag.zone)) return;
   if (!['landing', 'discover'].includes(monetag.placement)) return;
   const region = document.querySelector(`[data-ad-placement="${monetag.placement}"]`);
-  if (!region || !/^[A-Za-z][\w:-]*$/.test(monetag.containerId)) return;
+  if (!region) return;
+  if (monetag.containerId && !/^[A-Za-z][\w:-]*$/.test(monetag.containerId)) return;
+  if (monetag.zone && !/^\d+$/.test(String(monetag.zone))) return;
 
   let scriptUrl;
   try {
@@ -118,13 +120,20 @@ function loadMonetagAd(monetag) {
   const content = region.querySelector('[id^="ad-"][id$="-content"]');
   if (!content) return;
   region.hidden = false;
-  const container = document.createElement('div');
-  container.id = monetag.containerId;
-  content.appendChild(container);
+  if (monetag.containerId) {
+    const container = document.createElement('div');
+    container.id = monetag.containerId;
+    content.appendChild(container);
+  }
 
   const script = document.createElement('script');
   script.async = true;
   script.src = scriptUrl.href;
+  // Tags no formato "tag.min.js" usam data-zone (ID da zona no painel da Monetag).
+  if (monetag.zone) {
+    script.dataset.zone = String(monetag.zone);
+    script.setAttribute('data-cfasync', 'false');
+  }
   script.onerror = () => {
     hideAdPlacement(monetag.placement);
     console.error('Não foi possível carregar o script de anúncios Monetag.');
