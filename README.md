@@ -26,6 +26,10 @@ js/data.js
 js/ads-config.js
 js/monetization.js
 assets/profiles/
+ads.txt
+sw.js            (service worker da Monetag; só tem efeito se você o registrar)
+server.js        (opcional: API Express + Socket.IO, não usada pelo protótipo)
+.env.example     (modelo de variáveis para o servidor opcional)
 ```
 
 ## Preparar anúncios
@@ -33,7 +37,7 @@ assets/profiles/
 Os espaços de publicidade são ocultados e nenhum script de anúncios é carregado por padrão. Para configurar:
 
 1. Abra `js/ads-config.js` e preencha o ID de editor do Google AdSense (`ca-pub-...`) e os IDs das unidades para `landing` e/ou `discover`, conforme exibidos no seu painel.
-2. Para Monetag, configure a URL HTTPS do script e o ID do contêiner copiados do painel oficial, além do posicionamento `landing` ou `discover`. Não use códigos de terceiros que não reconheça.
+2. Para Monetag, configure a URL HTTPS do script e o ID do contêiner **ou** o ID da zona (`zone`, para tags no formato `tag.min.js` com `data-zone`) copiados do painel oficial, além do posicionamento `landing` ou `discover`. A tag da zona 304192 já está configurada em `js/ads-config.js` e só carrega após o consentimento. Não cole tags diretamente no `index.html` e não use códigos de terceiros que não reconheça.
 3. Configure um parceiro por posicionamento para evitar sobreposição entre anúncios.
 4. Publique em um domínio controlado por você, conclua a verificação/aprovação de cada rede e faça os ajustes de `ads.txt` exigidos por cada painel antes de ativar anúncios.
 5. Revise as políticas dos parceiros, a política de privacidade e os requisitos legais aplicáveis. Para visitantes do EEE, Reino Unido ou Suíça, use uma CMP certificada pelo Google quando exigido pelas regras do AdSense.
@@ -71,3 +75,15 @@ Este protótipo **não** possui contas/autenticação reais, banco de dados, men
 - Testar acessibilidade, segurança, privacidade e comportamento em navegadores e dispositivos antes de divulgar.
 
 O frontend não possui integração pronta com Supabase, Firebase ou API própria. Decida a infraestrutura e os requisitos de dados antes de conectar serviços.
+
+## Servidor opcional (`server.js`)
+
+O protótipo não depende dele. Para rodar a API de teste (banco em memória, tudo se perde ao reiniciar):
+
+```bash
+npm install
+cp .env.example .env   # preencha JWT_SECRET (obrigatório em produção)
+npm start
+```
+
+O servidor só expõe `index.html`, `css/`, `js/`, `assets/`, `uploads/`, `sw.js` e `ads.txt`; nunca versione o `.env`. Sockets exigem o token JWT, mensagens só são aceitas entre matches e o cadastro exige 18 anos ou mais. Isto ainda **não** é um backend pronto para produção (sem banco, moderação nem verificação de e-mail).

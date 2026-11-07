@@ -1,5 +1,7 @@
-﻿node_modules/
+node_modules/
 .env
-uploads/temporario/
+uploads/
 *.log
+*.crdownload
+.playwright-mcp/
 .DS_Store
