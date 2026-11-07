@@ -79,8 +79,8 @@ const INFO_PAGES = {
   privacy: {
     title: 'Aviso de privacidade da demonstração',
     sections: [
-      ['O que fica no navegador', 'O perfil de teste, preferências, curtidas, matches e mensagens simuladas ficam no armazenamento local deste navegador. O aplicativo não envia essas informações para um servidor.'],
-      ['Publicidade e parceiros', 'Se anúncios forem configurados e você permitir, os scripts dos parceiros de publicidade serão carregados e poderão usar cookies e tratar dados técnicos, como endereço IP e informações do navegador, para personalizar e medir anúncios, conforme as políticas deles. Sem configuração ou consentimento, esses scripts não são carregados.'],
+      ['O que fica no navegador', 'O perfil de teste, preferências, curtidas, matches e mensagens simuladas ficam no armazenamento local deste navegador. O aplicativo não envia essas informações para um servidor; apenas o parceiro de anúncios acima recebe dados técnicos de navegação.'],
+      ['Publicidade e parceiros', 'Este site exibe anúncios da Monetag, cujo script é carregado assim que você abre a página. Esse parceiro pode usar cookies e tratar dados técnicos, como endereço IP e informações do navegador, para exibir e medir anúncios, conforme a política dele. Anúncios de outros parceiros, como o Google, só são carregados se você permitir em “Preferências de anúncios”.'],
       ['Cuide do dispositivo', 'Qualquer pessoa com acesso ao mesmo navegador pode ver os dados salvos. Evite dados pessoais e use “Apagar meus dados deste navegador” no seu perfil para removê-los.'],
       ['Produto real', 'Antes de lançar um serviço real, será necessário definir e publicar a identidade do controlador, finalidades, bases legais, retenção, canal de direitos e contato, conforme a LGPD.']
     ]

@@ -8,10 +8,12 @@ window.PAQUERA_ADS_CONFIG = {
       discover: ''
     }
   },
+  // A Monetag (zona 304192) está fixa no <head> do index.html, para que o painel
+  // verifique o site e os anúncios apareçam para todos os visitantes.
+  // Deixe vazio aqui para não carregar a mesma tag duas vezes.
   monetag: {
-    // Tag da zona 304192 (antes colada direto no index.html, sem consentimento).
-    scriptUrl: 'https://quge5.com/88/tag.min.js',
-    zone: '304192',
+    scriptUrl: '',
+    zone: '',
     containerId: '',
     placement: 'discover'
   }
