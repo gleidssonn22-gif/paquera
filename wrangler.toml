@@ -1,0 +1,10 @@
+# Configuração do Wrangler para deploy do Paquera
+# Site de relacionamentos — clubewins.com.br
+
+name = "paquera"
+compatibility_date = "2026-11-09"
+
+[assets]
+directory = "./"
+not_found_handling = "single-page-application"
+html_handling = "auto-trailing-slash"

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastre-se no Paquera — Crie sua conta gratuita e encontre seu match.">
+    <title>Cadastro — Paquera | clubewins.com.br</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <a href="index.html" class="auth-logo"><span class="logo-icon">❤</span> Paquera</a>
+                <h1>Encontre o amor ❤</h1>
+                <p>Crie sua conta gratuita e comece a conhecer pessoas incríveis hoje mesmo.</p>
+                <div class="auth-features">
+                    <div class="auth-feature"><span>✓</span> 100% grátis para começar</div>
+                    <div class="auth-feature"><span>✓</span> Perfis verificados</div>
+                    <div class="auth-feature"><span>✓</span> Mais de 2 milhões de membros</div>
+                </div>
+            </div>
+        </div>
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2>Criar conta</h2>
+                <p class="auth-subtitle">Leva menos de 2 minutos</p>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="name">Nome completo</label>
+                        <input type="text" id="name" name="name" placeholder="Seu nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')">👁</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdate">Data de nascimento</label>
+                        <input type="date" id="birthdate" name="birthdate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gênero</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="gender" value="mulher" required> Mulher</label>
+                            <label class="radio-label"><input type="radio" name="gender" value="homem"> Homem</label>
+                            <label class="radio-label"><input type="radio" name="gender" value="outro"> Outro</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Cidade</label>
+                        <input type="text" id="city" name="city" placeholder="Sua cidade" required>
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                        Aceito os <a href="#" class="link-muted">Termos de uso</a> e a <a href="#" class="link-muted">Política de privacidade</a>
+                    </label>
+                    <div class="form-error" id="registerError"></div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Criar conta grátis</button>
+                </form>
+                <div class="auth-divider"><span>ou</span></div>
+                <button class="btn btn-outline btn-block" onclick="socialLogin('google')">🔗 Cadastrar com Google</button>
+                <p class="auth-switch">Já tem conta? <a href="entrar.html">Entrar</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

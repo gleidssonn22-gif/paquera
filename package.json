@@ -1,0 +1,23 @@
+{
+  "name": "paquera",
+  "version": "2.1.0",
+  "description": "Paquera — protótipo de site de relacionamentos (estático) com servidor opcional",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check js/app.js && node --check js/data.js && node --check js/monetization.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.3",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^1.4.5-lts.2",
+    "socket.io": "^4.8.4"
+  },
+  "keywords": ["relacionamentos", "namoro", "paquera"],
+  "author": "Paquera Team",
+  "license": "MIT"
+}
