@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, salt TEXT NOT NULL, age INTEGER, gender TEXT, city TEXT, bio TEXT, plan TEXT DEFAULT 'free', created_at TEXT DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS preferences (user_id INTEGER PRIMARY KEY, min_age INTEGER DEFAULT 18, max_age INTEGER DEFAULT 99, interested_in TEXT DEFAULT 'all', max_distance INTEGER DEFAULT 100);
+CREATE TABLE IF NOT EXISTS user_photos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, photo_url TEXT NOT NULL, created_at TEXT DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS user_status (user_id INTEGER PRIMARY KEY, last_seen TEXT, online INTEGER DEFAULT 0);
+CREATE TABLE IF NOT EXISTS profile_verification (user_id INTEGER PRIMARY KEY, verified INTEGER DEFAULT 0, photo_url TEXT, created_at TEXT DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS likes (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, created_at TEXT DEFAULT (datetime('now')), UNIQUE(from_user_id, to_user_id));
+CREATE TABLE IF NOT EXISTS super_likes (id INTEGER PRIMARY KEY AUTOINCREMENT, from_user_id INTEGER NOT NULL, to_user_id INTEGER NOT NULL, created_at TEXT DEFAULT (datetime('now')), UNIQUE(from_user_id, to_user_id));
+CREATE TABLE IF NOT EXISTS matches (id INTEGER PRIMARY KEY AUTOINCREMENT, user1_id INTEGER NOT NULL, user2_id INTEGER NOT NULL, created_at TEXT DEFAULT (datetime('now')), UNIQUE(user1_id, user2_id));
+CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, match_id INTEGER NOT NULL, from_user_id INTEGER NOT NULL, content TEXT NOT NULL, type TEXT DEFAULT 'text', created_at TEXT DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS message_reads (message_id INTEGER PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, blocker_id INTEGER NOT NULL, blocked_id INTEGER NOT NULL, created_at TEXT DEFAULT (datetime('now')), UNIQUE(blocker_id, blocked_id));
+CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTOINCREMENT, reporter_id INTEGER NOT NULL, reported_id INTEGER NOT NULL, reason TEXT, created_at TEXT DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, type TEXT, title TEXT, body TEXT, read INTEGER DEFAULT 0, created_at TEXT DEFAULT (datetime('now')));
+CREATE INDEX IF NOT EXISTS idx_likes_from ON likes(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_matches_u1 ON matches(user1_id);
+CREATE INDEX IF NOT EXISTS idx_messages_match ON messages(match_id);

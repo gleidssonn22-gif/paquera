@@ -1,0 +1,39 @@
+name = "paquera"
+main = "worker.js"
+compatibility_date = "2026-11-09"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./"
+not_found_handling = "single-page-application"
+html_handling = "auto"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "paquera"
+database_id = "650090e3-c4fa-43af-8859-1210f1a36695"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "b4c715179a9447808e31b80cb840b575"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "dc252cad74b34eb283cbba1bae88155a"
+
+[[queues.producers]]
+binding = "NOTIFICATIONS"
+queue = "paquera-tasks"
+
+[[queues.consumers]]
+queue = "paquera-tasks"
+max_batch_size = 10
+
+[ai]
+binding = "AI"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[observability]
+enabled = true

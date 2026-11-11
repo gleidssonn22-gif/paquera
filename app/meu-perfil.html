@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meu perfil Paquera — Edite suas informações.">
+    <title>Meu Perfil — Paquera | clubewins.com.br</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body class="app-body">
+    <aside class="app-sidebar" id="sidebar">
+        <a href="dashboard.html" class="app-logo"><span class="logo-icon">❤</span> Paquera</a>
+        <nav class="app-nav">
+            <a href="dashboard.html" class="app-nav-link"><span>🔥</span> Descobrir</a>
+            <a href="matches.html" class="app-nav-link"><span>💕</span> Matches</a>
+            <a href="chat.html" class="app-nav-link"><span>💬</span> Mensagens <span class="badge">3</span></a>
+            <a href="perfis.html" class="app-nav-link"><span>🔍</span> Buscar</a>
+            <a href="meu-perfil.html" class="app-nav-link active"><span>👤</span> Meu perfil</a>
+            <a href="configuracoes.html" class="app-nav-link"><span>⚙</span> Configurações</a>
+        </nav>
+        <div class="app-sidebar-footer">
+            <a href="index.html" class="app-nav-link"><span>🚪</span> Sair</a>
+        </div>
+    </aside>
+
+    <main class="app-main">
+        <header class="app-header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="app-header-search">
+                <input type="text" placeholder="Buscar pessoas..." id="searchInput">
+            </div>
+            <div class="app-header-actions">
+                <button class="icon-btn">🔔<span class="dot"></span></button>
+                <div class="header-avatar avatar-1"></div>
+            </div>
+        </header>
+
+        <div class="app-content">
+            <div class="page-title-bar">
+                <h1>Meu perfil</h1>
+                <p>Gerencie suas informações e fotos</p>
+            </div>
+
+            <div class="profile-edit-layout">
+                <div class="profile-edit-left">
+                    <div class="profile-photo-section">
+                        <div class="profile-photo-main avatar-1"></div>
+                        <div class="profile-photo-grid">
+                            <div class="profile-photo-slot"><span>+</span></div>
+                            <div class="profile-photo-slot"><span>+</span></div>
+                            <div class="profile-photo-slot"><span>+</span></div>
+                            <div class="profile-photo-slot"><span>+</span></div>
+                        </div>
+                        <p class="photo-hint">Adicione até 6 fotos. A primeira será sua foto principal.</p>
+                    </div>
+
+                    <div class="profile-completion">
+                        <h3>Perfil completo</h3>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+                        <p>75% completo — adicione mais fotos e informações para receber mais matches!</p>
+                    </div>
+                </div>
+
+                <div class="profile-edit-right">
+                    <div class="edit-section">
+                        <h3>Informações básicas</h3>
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <input type="text" value="João Silva" class="form-input">
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Idade</label>
+                                <input type="number" value="29" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Cidade</label>
+                                <input type="text" value="São Paulo, SP" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Profissão</label>
+                            <input type="text" value="Desenvolvedor" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>Sobre você</h3>
+                        <div class="form-group">
+                            <label>Bio</label>
+                            <textarea class="form-input" rows="4">Apaixonado por tecnologia, viagens e café. Busco alguém para compartilhar aventuras e momentos especiais.</textarea>
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>Interesses</h3>
+                        <div class="interests-editor">
+                            <span class="interest-tag">✈️ Viajar <button class="remove-tag">✕</button></span>
+                            <span class="interest-tag">☕ Café <button class="remove-tag">✕</button></span>
+                            <span class="interest-tag">💻 Tecnologia <button class="remove-tag">✕</button></span>
+                            <span class="interest-tag">🐕 Cães <button class="remove-tag">✕</button></span>
+                            <button class="add-interest">+ Adicionar interesse</button>
+                        </div>
+                    </div>
+
+                    <div class="edit-section">
+                        <h3>Preferências</h3>
+                        <div class="form-group">
+                            <label>Busco</label>
+                            <select class="form-input">
+                                <option>Mulheres</option>
+                                <option>Homens</option>
+                                <option>Todos</option>
+                            </select>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Idade mínima</label>
+                                <input type="number" value="25" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Idade máxima</label>
+                                <input type="number" value="35" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg">Salvar alterações</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/main.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Matches Paquera — Veja quem curtiu você.">
+    <title>Matches — Paquera | clubewins.com.br</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body class="app-body">
+    <aside class="app-sidebar" id="sidebar">
+        <a href="dashboard.html" class="app-logo"><span class="logo-icon">❤</span> Paquera</a>
+        <nav class="app-nav">
+            <a href="dashboard.html" class="app-nav-link"><span>🔥</span> Descobrir</a>
+            <a href="matches.html" class="app-nav-link active"><span>💕</span> Matches</a>
+            <a href="chat.html" class="app-nav-link"><span>💬</span> Mensagens <span class="badge">3</span></a>
+            <a href="perfis.html" class="app-nav-link"><span>🔍</span> Buscar</a>
+            <a href="meu-perfil.html" class="app-nav-link"><span>👤</span> Meu perfil</a>
+            <a href="configuracoes.html" class="app-nav-link"><span>⚙</span> Configurações</a>
+        </nav>
+        <div class="app-sidebar-footer">
+            <a href="index.html" class="app-nav-link"><span>🚪</span> Sair</a>
+        </div>
+    </aside>
+
+    <main class="app-main">
+        <header class="app-header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="app-header-search">
+                <input type="text" placeholder="Buscar pessoas..." id="searchInput">
+            </div>
+            <div class="app-header-actions">
+                <button class="icon-btn">🔔<span class="dot"></span></button>
+                <div class="header-avatar avatar-1"></div>
+            </div>
+        </header>
+
+        <div class="app-content">
+            <div class="page-title-bar">
+                <h1>Matches</h1>
+                <p>Vocês se curtiram mutuamente</p>
+            </div>
+
+            <div class="matches-tabs">
+                <button class="match-tab active" onclick="switchMatchTab('all')">Todos (12)</button>
+                <button class="match-tab" onclick="switchMatchTab('new')">Novos (3)</button>
+                <button class="match-tab" onclick="switchMatchTab('online')">Online (5)</button>
+            </div>
+
+            <div class="matches-grid" id="matchesGrid">
+                <div class="match-card">
+                    <div class="match-photo avatar-1"></div>
+                    <div class="match-info">
+                        <div class="match-name">Ana Beatriz <span class="online-dot"></span></div>
+                        <div class="match-meta">28 · São Paulo</div>
+                        <p class="match-preview">Oi! Adorei seu perfil 😊</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+                <div class="match-card">
+                    <div class="match-photo avatar-2"></div>
+                    <div class="match-info">
+                        <div class="match-name">Carlos Eduardo <span class="online-dot"></span></div>
+                        <div class="match-meta">32 · Rio de Janeiro</div>
+                        <p class="match-preview">Vamos marcar um café?</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+                <div class="match-card">
+                    <div class="match-photo avatar-3"></div>
+                    <div class="match-info">
+                        <div class="match-name">Marina Souza</div>
+                        <div class="match-meta">25 · Belo Horizonte</div>
+                        <p class="match-preview">Você gosta de yoga também?</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+                <div class="match-card">
+                    <div class="match-photo avatar-4"></div>
+                    <div class="match-info">
+                        <div class="match-name">Roberto Lima <span class="online-dot"></span></div>
+                        <div class="match-meta">30 · Curitiba</div>
+                        <p class="match-preview">Que foto incrente na praia!</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+                <div class="match-card">
+                    <div class="match-photo avatar-5"></div>
+                    <div class="match-info">
+                        <div class="match-name">Beatriz Costa</div>
+                        <div class="match-meta">27 · Recife</div>
+                        <p class="match-preview">Olá! Tudo bem? 😄</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+                <div class="match-card">
+                    <div class="match-photo avatar-6"></div>
+                    <div class="match-info">
+                        <div class="match-name">Pedro Henrique <span class="online-dot"></span></div>
+                        <div class="match-meta">29 · Porto Alegre</div>
+                        <p class="match-preview">Topa um passeio no parque?</p>
+                    </div>
+                    <a href="chat.html" class="match-action">💬</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/main.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
