@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name = "paquera"
 main = "worker.js"
 compatibility_date = "2026-11-09"
@@ -37,3 +38,15 @@ crons = ["*/5 * * * *"]
 
 [observability]
 enabled = true
+=======
+# Configuração do Wrangler para deploy do Paquera
+# Site de relacionamentos — clubewins.com.br
+
+name = "paquera"
+compatibility_date = "2026-11-09"
+
+[assets]
+directory = "./"
+not_found_handling = "single-page-application"
+html_handling = "auto-trailing-slash"
+>>>>>>> 8c331ccce82605370e128893f9ccefa597c16590
