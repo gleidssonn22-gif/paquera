@@ -50,12 +50,16 @@ dataset = "paquera_metrics"
 name = "CHAT_ROOM"
 class_name = "ChatRoom"
 
-[[vectorize_indexes]]
+[exports.ChatRoom]
+type = "durable-object"
+storage = "sqlite"
+
+[[vectorize]]
 binding = "VECTORIZE"
 index_name = "paquera-matches"
 
 [[send_email]]
-binding = "SEND_EMAIL"
+name = "SEND_EMAIL"
 
 [triggers]
 crons = ["*/5 * * * *", "0 * * * *"]
