@@ -54,9 +54,6 @@ class_name = "ChatRoom"
 type = "durable-object"
 storage = "sqlite"
 
-[[vectorize]]
-binding = "VECTORIZE"
-index_name = "paquera-matches"
 
 [[send_email]]
 name = "SEND_EMAIL"
