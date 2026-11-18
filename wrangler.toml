@@ -63,3 +63,6 @@ crons = ["*/5 * * * *", "0 * * * *"]
 
 [observability]
 enabled = true
+[observability.traces]
+enabled = true
+enabled = true
