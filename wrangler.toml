@@ -54,7 +54,6 @@ class_name = "ChatRoom"
 type = "durable-object"
 storage = "sqlite"
 
-
 [[send_email]]
 name = "SEND_EMAIL"
 
@@ -63,6 +62,6 @@ crons = ["*/5 * * * *", "0 * * * *"]
 
 [observability]
 enabled = true
+
 [observability.traces]
-enabled = true
 enabled = true
