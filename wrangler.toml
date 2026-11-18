@@ -6,8 +6,8 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./"
 binding = "ASSETS"
-not_found_handling = "single-page-application"
-html_handling = "auto-trailing-slash"
+not_found_handling = "none"
+html_handling = "none"
 
 [ai]
 binding = "AI"
@@ -61,7 +61,4 @@ name = "SEND_EMAIL"
 crons = ["*/5 * * * *", "0 * * * *"]
 
 [observability]
-enabled = true
-
-[observability.traces]
 enabled = true
