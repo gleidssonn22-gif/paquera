@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>(function(s){s.dataset.zone='12171808',s.src='https://al5sm.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat — Paquera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">💕 Paquera</a>
+  <div class="nav-links">
+    <a href="/descobrir.html">Descobrir</a>
+    <a href="/matches.html" class="active">Matches</a>
+    <a href="/perfil.html">Perfil</a>
+  </div>
+</nav>
+
+<div class="chat-container">
+  <div class="chat-header" id="chatHeader">
+    <a href="/matches.html" style="color:var(--text-muted);text-decoration:none;font-size:20px;">←</a>
+    <img id="matchPhoto" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff" alt="">
+    <div>
+      <div class="name" id="matchName">Carregando...</div>
+      <div class="status" id="matchStatus"></div>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="chatMessages"></div>
+
+  <div class="chat-input">
+    <input type="text" id="msgInput" placeholder="Digite uma mensagem..." onkeypress="if(event.key==='Enter')sendMessage()">
+    <button onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+const matchId = new URLSearchParams(location.search).get("match_id");
+let ws;
+
+(async () => {
+  if (!await checkAuth()) exit();
+  startOnlinePing();
+
+  // Load match info
+  try {
+    const data = await api("/matches");
+    const match = data.matches.find(m => m.match_id == matchId);
+    if (match) {
+      document.getElementById("matchName").textContent = match.name;
+      document.getElementById("matchPhoto").src = match.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(match.name)}&background=6c5ce7&color=fff`;
+      document.getElementById("matchStatus").textContent = match.is_online ? "🟢 Online" : "Offline";
+    }
+  } catch (e) {}
+
+  // Load messages
+  try {
+    const msgData = await api(`/matches/messages?match_id=${matchId}`);
+    renderMessages(msgData.messages);
+  } catch (e) {}
+
+  // Connect WebSocket via Durable Object
+  try {
+    const wsUrl = `wss://${location.host}/api/chat?match_id=${matchId}`;
+    ws = new WebSocket(wsUrl, ["websocket"]);
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "message") {
+        appendMessage(data.content, "received");
+      }
+    };
+  } catch (e) {
+    // Fallback: poll for messages
+    setInterval(async () => {
+      const msgData = await api(`/matches/messages?match_id=${matchId}`);
+      renderMessages(msgData.messages);
+    }, 5000);
+  }
+})();
+
+function renderMessages(messages) {
+  const container = document.getElementById("chatMessages");
+  container.innerHTML = messages.map(m => {
+    const sent = m.sender_id === currentUser.id;
+    return `<div class="chat-msg ${sent ? "sent" : "received"}">${escapeHtml(m.content)}</div>`;
+  }).join("");
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendMessage(content, type) {
+  const container = document.getElementById("chatMessages");
+  const msg = document.createElement("div");
+  msg.className = `chat-msg ${type}`;
+  msg.textContent = content;
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById("msgInput");
+  const content = input.value.trim();
+  if (!content) return;
+
+  appendMessage(content, "sent");
+  input.value = "";
+
+  try {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ content }));
+    } else {
+      await api(`/chat?match_id=${matchId}`, {
+        method: "POST",
+        body: JSON.stringify({ content })
+      });
+    }
+  } catch (e) {
+    toast("Erro ao enviar mensagem", "error");
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>

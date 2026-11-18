@@ -1,0 +1,54 @@
+name = "paquera"
+main = "worker.js"
+compatibility_date = "2026-11-09"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+html_handling = "auto-trailing-slash"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "paquera"
+database_id = "650090e3-c4fa-43af-8859-1210f1a36695"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "b4c715179a9447808e31b80cb840b575"
+
+[[kv_namespaces]]
+binding = "TOOLS"
+id = "dc252cad74b34eb283cbba1bae88155a"
+
+[[kv_namespaces]]
+binding = "SITE_KV"
+id = "9b305162a0e54960bdfd2584b4177377"
+
+[[queues.producers]]
+binding = "TASKS"
+queue = "paquera-tasks"
+
+[[queues.producers]]
+queue = "paquera-notifications"
+binding = "NOTIFICATIONS"
+
+[[queues.consumers]]
+queue = "paquera-tasks"
+dead_letter_queue = "paquera-tasks-dlq"
+max_batch_size = 10
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "paquera_metrics"
+
+[[durable_objects.bindings]]
+name = "CHAT_ROOM"
+class_name = "ChatRoom"
+
+[triggers]
+crons = ["*/5 * * * *", "0 * * * *"]
+
+[observability]
+enabled = true

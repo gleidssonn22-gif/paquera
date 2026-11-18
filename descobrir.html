@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>(function(s){s.dataset.zone='12171808',s.src='https://al5sm.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descobrir — Paquera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">💕 Paquera</a>
+  <div class="nav-links">
+    <a href="/descobrir.html" class="active">Descobrir</a>
+    <a href="/matches.html">Matches</a>
+    <a href="/perfil.html">Perfil</a>
+  </div>
+</nav>
+
+<div class="swipe-container" id="swipeContainer"></div>
+
+<div class="swipe-actions">
+  <button class="swipe-btn pass" onclick="deck.pass()">✕</button>
+  <button class="swipe-btn super" onclick="toast('Super like enviado! 💙','success')">⭐</button>
+  <button class="swipe-btn like" onclick="deck.like()">♥</button>
+</div>
+
+<div class="bottom-nav">
+  <a href="/descobrir.html" class="active"><span class="icon">🏠</span>Descobrir</a>
+  <a href="/matches.html"><span class="icon">💬</span>Matches</a>
+  <a href="/perfil.html"><span class="icon">👤</span>Perfil</a>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+let deck;
+(async () => {
+  if (!await checkAuth()) exit();
+  startOnlinePing();
+
+  try {
+    const data = await api("/discover");
+    deck = new SwipeDeck(
+      document.getElementById("swipeContainer"),
+      data.profiles,
+      async (targetId, action) => {
+        return await api("/swipe", {
+          method: "POST",
+          body: JSON.stringify({ target_id: targetId, action })
+        });
+      }
+    );
+  } catch (err) {
+    toast(err.message, "error");
+  }
+})();
+</script>
+</body>
+</html>

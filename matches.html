@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>(function(s){s.dataset.zone='12171808',s.src='https://al5sm.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matches — Paquera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">💕 Paquera</a>
+  <div class="nav-links">
+    <a href="/descobrir.html">Descobrir</a>
+    <a href="/matches.html" class="active">Matches</a>
+    <a href="/perfil.html">Perfil</a>
+  </div>
+</nav>
+
+<div class="matches-list">
+  <h1 style="font-size:28px;margin-bottom:20px;">Seus Matches 💕</h1>
+  <div id="matchesList"></div>
+</div>
+
+<div class="bottom-nav">
+  <a href="/descobrir.html"><span class="icon">🏠</span>Descobrir</a>
+  <a href="/matches.html" class="active"><span class="icon">💬</span>Matches</a>
+  <a href="/perfil.html"><span class="icon">👤</span>Perfil</a>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+(async () => {
+  if (!await checkAuth()) exit();
+  startOnlinePing();
+
+  try {
+    const data = await api("/matches");
+    const list = document.getElementById("matchesList");
+
+    if (data.matches.length === 0) {
+      list.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+          <div style="font-size:48px;margin-bottom:12px;">💔</div>
+          <p>Você ainda não tem matches.<br>Deslize para encontrar pessoas!</p>
+          <a href="/descobrir.html" class="btn btn-primary" style="margin-top:20px;">Descobrir pessoas</a>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = data.matches.map(m => `
+      <div class="match-item" onclick="window.location.href='/chat.html?match_id=${m.match_id}'">
+        <img src="${m.photo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name) + '&background=6c5ce7&color=fff'}" alt="${m.name}">
+        <div class="info">
+          <div class="name">${m.name} ${m.is_verified ? '✔️' : ''}</div>
+          <div class="last-msg">${m.is_online ? '🟢 Online' : 'Offline'}</div>
+        </div>
+        ${m.unread > 0 ? `<span class="unread">${m.unread}</span>` : ''}
+      </div>
+    `).join("");
+  } catch (err) {
+    toast(err.message, "error");
+  }
+})();
+</script>
+</body>
+</html>

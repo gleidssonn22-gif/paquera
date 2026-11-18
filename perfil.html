@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>(function(s){s.dataset.zone='12171808',s.src='https://al5sm.com/tag.min.js'})([document.documentElement,document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="304192" async data-cfasync="false"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — Paquera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">💕 Paquera</a>
+  <div class="nav-links">
+    <a href="/descobrir.html">Descobrir</a>
+    <a href="/matches.html">Matches</a>
+    <a href="/perfil.html" class="active">Perfil</a>
+  </div>
+</nav>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <img id="profilePhoto" src="https://ui-avatars.com/api/?background=6c5ce7&color=fff" alt="">
+    <h2 id="profileName" style="font-size:22px;">Carregando...</h2>
+    <p id="profileInfo" style="color:var(--text-muted);font-size:14px;"></p>
+    <div style="margin-top:12px;">
+      <span id="verifiedBadge" style="display:none;background:var(--success);color:white;padding:4px 12px;border-radius:10px;font-size:12px;">✔️ Verificado</span>
+      <span id="premiumBadge" style="display:none;background:var(--gradient);color:white;padding:4px 12px;border-radius:10px;font-size:12px;margin-left:4px;">⭐ Premium</span>
+    </div>
+  </div>
+
+  <form id="profileForm" style="background:var(--bg-card);padding:24px;border-radius:20px;">
+    <h3 style="margin-bottom:16px;">Editar Perfil</h3>
+
+    <div class="input-group">
+      <label>Foto principal (URL)</label>
+      <input type="text" id="photo_url" placeholder="https://...foto.jpg">
+    </div>
+
+    <div class="profile-photos">
+      <div class="photo-slot" id="slot1">+</div>
+      <div class="photo-slot" id="slot2">+</div>
+      <div class="photo-slot" id="slot3">+</div>
+    </div>
+
+    <div class="input-group">
+      <label>Bio</label>
+      <textarea id="bio" placeholder="Conte sobre você..."></textarea>
+    </div>
+
+    <div class="input-group">
+      <label>Cidade</label>
+      <input type="text" id="city" placeholder="Sua cidade">
+    </div>
+
+    <div class="input-group">
+      <label>Buscando</label>
+      <select id="looking_for">
+        <option value="both">Ambos</option>
+        <option value="male">Homens</option>
+        <option value="female">Mulheres</option>
+        <option value="other">Outros</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Interesses (separados por vírgula)</label>
+      <input type="text" id="interests" placeholder="música, viagens, esportes...">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%;">Salvar perfil</button>
+  </form>
+
+  <div style="text-align:center;margin-top:20px;">
+    <button onclick="logout()" class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);">Sair da conta</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="/descobrir.html"><span class="icon">🏠</span>Descobrir</a>
+  <a href="/matches.html"><span class="icon">💬</span>Matches</a>
+  <a href="/perfil.html" class="active"><span class="icon">👤</span>Perfil</a>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+(async () => {
+  if (!await checkAuth()) exit();
+  startOnlinePing();
+
+  try {
+    const profile = await api("/profile");
+    document.getElementById("profileName").textContent = profile.name;
+    document.getElementById("profileInfo").textContent = `${profile.city || "Sem cidade"} • ${profile.gender || ""}`;
+    document.getElementById("profilePhoto").src = profile.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=6c5ce7&color=fff`;
+
+    if (profile.is_verified) document.getElementById("verifiedBadge").style.display = "inline-block";
+    if (profile.is_premium) document.getElementById("premiumBadge").style.display = "inline-block";
+
+    document.getElementById("photo_url").value = profile.photo_url || "";
+    document.getElementById("bio").value = profile.bio || "";
+    document.getElementById("city").value = profile.city || "";
+    document.getElementById("looking_for").value = profile.looking_for || "both";
+    document.getElementById("interests").value = profile.interests ? JSON.parse(profile.interests).join(", ") : "";
+  } catch (err) {
+    toast(err.message, "error");
+  }
+})();
+
+document.getElementById("profileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const interests = document.getElementById("interests").value
+      .split(",").map(i => i.trim()).filter(Boolean);
+
+    await api("/profile/update", {
+      method: "POST",
+      body: JSON.stringify({
+        photo_url: document.getElementById("photo_url").value,
+        bio: document.getElementById("bio").value,
+        city: document.getElementById("city").value,
+        looking_for: document.getElementById("looking_for").value,
+        interests: JSON.stringify(interests)
+      })
+    });
+    toast("Perfil atualizado! ✅", "success");
+  } catch (err) {
+    toast(err.message, "error");
+  }
+});
+</script>
+</body>
+</html>
