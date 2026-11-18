@@ -9,6 +9,9 @@ binding = "ASSETS"
 not_found_handling = "single-page-application"
 html_handling = "auto-trailing-slash"
 
+[ai]
+binding = "AI"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "paquera"
@@ -46,6 +49,13 @@ dataset = "paquera_metrics"
 [[durable_objects.bindings]]
 name = "CHAT_ROOM"
 class_name = "ChatRoom"
+
+[[vectorize_indexes]]
+binding = "VECTORIZE"
+index_name = "paquera-matches"
+
+[[send_email]]
+binding = "SEND_EMAIL"
 
 [triggers]
 crons = ["*/5 * * * *", "0 * * * *"]
