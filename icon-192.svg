@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-label="Paquera">
+  <rect width="192" height="192" rx="48" fill="#ff4458"/>
+  <path d="M96 144 C56 116 34 92 34 68 C34 49 49 36 66 36 C79 36 90 43 96 55 C102 43 113 36 126 36 C143 36 158 49 158 68 C158 92 136 116 96 144 Z" fill="#ffffff"/>
+  <circle cx="96" cy="72" r="10" fill="#ff4458"/>
+</svg>

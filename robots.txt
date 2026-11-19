@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /chat.html
+Disallow: /splash.html
 Sitemap: https://clubewins.com.br/sitemap.xml

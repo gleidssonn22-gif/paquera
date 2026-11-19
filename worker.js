@@ -1,4 +1,5 @@
 import { ChatRoom } from "./chat-room";
+import { EmailMessage } from "cloudflare:email";
 export { ChatRoom };
 
 const CORS = {
@@ -46,9 +47,12 @@ export default {
       const seg = path.split("/");
       const resource = seg[0];
       const action = seg[1];
-      const token = (request.headers.get("Authorization") || "").replace("Bearer ", "");
+      let token = (request.headers.get("Authorization") || "").replace("Bearer ", "");
+      // WebSocket do browser não pode enviar header Authorization: /api/chat aceita ?token=
+      if (!token && resource === "chat") token = url.searchParams.get("token") || "";
       let userId = null;
-      if (token && resource !== "auth") {
+      const needsAuth = resource !== "auth" || (resource === "auth" && action === "me");
+      if (token && needsAuth) {
         userId = await verifyToken(token, env);
         if (!userId) return json({ error: "Não autorizado" }, 401);
       }
@@ -68,7 +72,7 @@ export default {
         if (action === "reset") return await handlePasswordReset(request, env);
         if (action === "reset-confirm") return await handlePasswordResetConfirm(request, env);
       }
-      if (resource === "discover") return await handleDiscover(userId, env);
+      if (resource === "discover") return await handleDiscover(request, userId, env);
       if (resource === "swipe") return await handleSwipe(request, userId, env);
       if (resource === "superlike") return await handleSuperLike(request, userId, env);
       if (resource === "boost") return await handleBoost(request, userId, env);
@@ -204,7 +208,9 @@ export default {
       if (resource === "data-request") return await handleDataRequest(request, userId, env);
       if (resource === "metrics") return await handlePlatformMetrics(env);
       if (resource === "supporter") return await handleSupporterPayment(request, userId, env);
+      if (resource === "account" && action === "delete") return await handleAccountDelete(userId, env);
       if (resource === "admin") {
+        if (!(await isAdmin(userId, env))) return json({ error: "Não autorizado" }, 403);
         if (action === "users") return await handleAdminUsers(env);
         if (action === "actions") return await handleAdminActions(env);
       }
@@ -240,6 +246,11 @@ async function handleRegister(request, env) {
   if (!body.email || !body.password || !body.name) return json({ error: "Email, senha e nome são obrigatórios" }, 400);
   if (body.password.length < 6) return json({ error: "Senha deve ter no mínimo 6 caracteres" }, 400);
   if (!body.email.includes("@")) return json({ error: "Email inválido" }, 400);
+  if (body.birth_date) {
+    const age = calcAge(body.birth_date);
+    if (!isFinite(age) || age < 18) return json({ error: "É necessário ter 18 anos ou mais" }, 400);
+    if (age > 120) return json({ error: "Data de nascimento inválida" }, 400);
+  }
   const existing = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(body.email).first();
   if (existing) return json({ error: "Email já cadastrado" }, 409);
   const hash = await hashPassword(body.password, env);
@@ -254,9 +265,12 @@ async function handleLogin(request, env) {
   const body = await request.json();
   if (!body.email || !body.password) return json({ error: "Email e senha obrigatórios" }, 400);
   const user = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(body.email).first();
-  if (!user) return json({ error: "Email não encontrado" }, 404);
-  const hash = await hashPassword(body.password, env);
-  if (hash !== user.password_hash) return json({ error: "Senha incorreta" }, 401);
+  if (!user || !(await verifyPassword(body.password, user.password_hash, env)))
+    return json({ error: "Email ou senha incorretos" }, 401);
+  if (!String(user.password_hash).startsWith("pbkdf2$")) {
+    const upgraded = await hashPassword(body.password, env);
+    await env.DB.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(upgraded, user.id).run().catch(() => {});
+  }
   const token = await signToken({ id: user.id }, env);
   return json({ token, user: { id: user.id, name: user.name, email: user.email } }, 200);
 }
@@ -267,16 +281,31 @@ async function handleMe(userId, env) {
   return json(user, 200);
 }
 
-async function handleDiscover(userId, env) {
+async function handleDiscover(request, userId, env) {
+  const url = new URL(request.url);
   const user = await env.DB.prepare("SELECT * FROM users WHERE id = ?").bind(userId).first();
   if (!user) return json({ error: "Usuário não encontrado" }, 404);
   const swiped = await env.DB.prepare("SELECT target_id FROM swipes WHERE user_id = ?").bind(userId).all();
   const blocked = await env.DB.prepare("SELECT blocked_id FROM blocks WHERE user_id = ?").bind(userId).all().catch(()=>({results:[]}));
   const excludeIds = [...swiped.results.map(s => s.target_id), ...blocked.results.map(b => b.blocked_id), userId];
   const placeholders = excludeIds.map(() => "?").join(",");
-  const targetGender = user.looking_for === "both" ? "both" : user.gender;
-  const query = "SELECT id, name, photo_url, photo_url_2, photo_url_3, bio, city, gender, birth_date, is_online, is_verified FROM users WHERE id NOT IN (" + placeholders + ") AND gender = CASE WHEN ? = 'both' THEN gender ELSE ? END AND looking_for IN (?, 'both') ORDER BY is_online DESC, created_at DESC LIMIT 20";
-  const results = await env.DB.prepare(query).bind(...excludeIds, user.looking_for, targetGender, user.gender).all();
+  // Filtro de gênero respeita o QUE o usuário busca (looking_for), não o próprio gênero.
+  const targetGender = user.looking_for || "both";
+  // Filtros de idade vindos do perfil (persistidos via /profile/update pela página de filtros)
+  const ageMin = Math.max(18, parseInt(user.age_min) || 18);
+  const ageMax = Math.min(99, parseInt(user.age_max) || 99);
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const birthMin = new Date(Date.UTC(y - ageMax - 1, now.getUTCMonth(), now.getUTCDate())).toISOString().slice(0, 10);
+  const birthMax = new Date(Date.UTC(y - ageMin, now.getUTCMonth(), now.getUTCDate())).toISOString().slice(0, 10);
+  // Filtros opcionais via query string (?online=1&verified=1&photo=1)
+  const clauses = [];
+  if (url.searchParams.get("online") === "1") clauses.push("AND is_online = 1");
+  if (url.searchParams.get("verified") === "1") clauses.push("AND is_verified = 1");
+  if (url.searchParams.get("photo") === "1") clauses.push("AND photo_url != ''");
+  const filterSql = clauses.join(" ");
+  const query = "SELECT id, name, photo_url, photo_url_2, photo_url_3, bio, city, gender, birth_date, is_online, is_verified FROM users WHERE id NOT IN (" + placeholders + ") AND gender = CASE WHEN ? = 'both' THEN gender ELSE ? END AND (looking_for IN (?, 'both') OR looking_for IS NULL) AND (birth_date IS NULL OR birth_date = '' OR (birth_date <= ? AND birth_date >= ?)) " + filterSql + " ORDER BY is_online DESC, created_at DESC LIMIT 20";
+  const results = await env.DB.prepare(query).bind(...excludeIds, targetGender, targetGender, user.gender, birthMax, birthMin).all();
   const profiles = results.results.map(p => ({ ...p, age: p.birth_date ? calcAge(p.birth_date) : null, distance: 0 }));
   return json({ profiles }, 200);
 }
@@ -296,6 +325,9 @@ async function handleSwipe(request, userId, env) {
       matched = true;
       await env.NOTIFICATIONS.send({ body: { type: "notification", user_id: body.target_id } });
       await env.DB.prepare("UPDATE paqueracoins SET balance = balance + 10 WHERE user_id = ?").bind(userId).run().catch(()=>{});
+      const me = await env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(userId).first().catch(() => null);
+      await env.DB.prepare("INSERT INTO notifications (user_id, type, title, body) VALUES (?, 'match', 'Novo match! 💕', ?)").bind(body.target_id, "Você deu match com " + (me?.name || "alguém") + "!").run().catch(()=>{});
+      await env.DB.prepare("INSERT INTO notifications (user_id, type, title, body) VALUES (?, 'match', 'Novo match! 💕', 'Vocês se curtiram! Comecem a conversar.')").bind(userId).run().catch(()=>{});
     }
   }
   return json({ matched }, 200);
@@ -344,7 +376,8 @@ async function handleCoinTransactions(userId, env) {
 
 async function handleEarnCoins(request, userId, env) {
   const body = await request.json();
-  const amount = body.amount || 5;
+  // Teto por ação para impedir auto-mint de saldo pelo cliente.
+  const amount = Math.max(1, Math.min(Math.floor(Number(body.amount)) || 5, 10));
   await env.DB.prepare("UPDATE paqueracoins SET balance = balance + ? WHERE user_id = ?").bind(amount, userId).run().catch(()=>{});
   await env.DB.prepare("INSERT INTO coin_transactions (user_id, amount, type, reason) VALUES (?, ?, 'earn', ?)").bind(userId, amount, body.reason || "daily").run().catch(()=>{});
   return json({ success: true, earned: amount }, 200);
@@ -458,6 +491,8 @@ async function handleSendGift(request, userId, env) {
   if ((coins?.balance || 0) < gift.price) return json({ error: "PaqueraCoins insuficientes" }, 400);
   await env.DB.prepare("UPDATE paqueracoins SET balance = balance - ? WHERE user_id = ?").bind(gift.price, userId).run().catch(()=>{});
   await env.DB.prepare("INSERT INTO user_gifts (user_id, from_user_id, gift_id) VALUES (?, ?, ?)").bind(body.target_id, userId, body.gift_id).run().catch(()=>{});
+  const me = await env.DB.prepare("SELECT name FROM users WHERE id = ?").bind(userId).first().catch(() => null);
+  await env.DB.prepare("INSERT INTO notifications (user_id, type, title, body) VALUES (?, 'gift', 'Presente recebido! 🎁', ?)").bind(body.target_id, (me?.name || "Alguém") + " enviou um presente para você!").run().catch(()=>{});
   return json({ success: true, message: "Presente enviado! 🎁" }, 200);
 }
 
@@ -522,15 +557,59 @@ async function handlePremiumStatus(userId, env) {
   return json({ is_premium: user?.is_premium || 0 }, 200);
 }
 
+const PREMIUM_COST = 500; // PaqueraCoins
+
 async function handleSubscribe(request, userId, env) {
-  const body = await request.json();
-  await env.DB.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").bind(userId).run().catch(()=>{});
+  const coins = await env.DB.prepare("SELECT balance FROM paqueracoins WHERE user_id = ?").bind(userId).first().catch(() => null);
+  if ((coins?.balance || 0) < PREMIUM_COST)
+    return json({ error: "Você precisa de " + PREMIUM_COST + " PaqueraCoins para ativar o Premium." }, 400);
+  const result = await env.DB.prepare("UPDATE paqueracoins SET balance = balance - ? WHERE user_id = ? AND balance >= ?").bind(PREMIUM_COST, userId, PREMIUM_COST).run().catch(() => null);
+  if (!result || !result.meta || result.meta.changes === 0) return json({ error: "Saldo insuficiente" }, 400);
+  await env.DB.prepare("UPDATE users SET is_premium = 1 WHERE id = ?").bind(userId).run().catch(() => {});
+  await env.DB.prepare("INSERT INTO coin_transactions (user_id, amount, type, reason) VALUES (?, ?, 'spend', 'premium')").bind(userId, -PREMIUM_COST).run().catch(() => {});
   return json({ success: true, message: "Premium ativado! ⭐" }, 200);
 }
 
 async function handleNotifications(userId, env) {
   const notifs = await env.DB.prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50").bind(userId).all().catch(()=>({results:[]}));
-  return json({ notifications: notifs.results }, 200);
+  const items = notifs.results.map(n => ({ id: n.id, type: n.type || "info", title: n.title || "Notificação", body: n.body || n.content || "", read: !!n.is_read, created_at: n.created_at }));
+  return json({ notifications: items }, 200);
+}
+
+async function handleAccountDelete(userId, env) {
+  if (!userId) return json({ error: "Não autorizado" }, 401);
+  const statements = [
+    env.DB.prepare("DELETE FROM swipes WHERE user_id = ? OR target_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM matches WHERE user1_id = ? OR user2_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM messages WHERE sender_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM paqueracoins WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM coin_transactions WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM blocks WHERE user_id = ? OR blocked_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM favorites WHERE user_id = ? OR target_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM stories WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_photos WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_settings WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_interests WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM notifications WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM push_subscriptions WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM password_resets WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_friends WHERE user_id = ? OR friend_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM moments WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM emergency_contacts WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM saved_searches WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_songs WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM daily_spins WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM user_badges WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM quiz_answers WHERE user_id = ?").bind(userId),
+    env.DB.prepare("DELETE FROM profile_views WHERE user_id = ? OR viewer_id = ?").bind(userId, userId),
+    env.DB.prepare("DELETE FROM users WHERE id = ?").bind(userId)
+  ];
+  try {
+    await env.DB.batch(statements);
+  } catch (e) {
+    return json({ error: "Erro ao excluir conta. Tente novamente." }, 500);
+  }
+  return json({ success: true, message: "Conta excluída." }, 200);
 }
 
 async function handleListMatches(userId, env) {
@@ -541,6 +620,7 @@ async function handleListMatches(userId, env) {
 async function handleGetMessages(request, userId, env) {
   const matchId = new URL(request.url).searchParams.get("match_id");
   if (!matchId) return json({ error: "match_id obrigatório" }, 400);
+  if (!(await isMatchParticipant(matchId, userId, env))) return json({ error: "Match não encontrado" }, 404);
   const messages = await env.DB.prepare("SELECT * FROM messages WHERE match_id = ? ORDER BY created_at ASC LIMIT 100").bind(matchId).all();
   await env.DB.prepare("UPDATE messages SET read_at = ? WHERE match_id = ? AND sender_id != ?").bind(Math.floor(Date.now() / 1000), matchId, userId).run();
   return json({ messages: messages.results }, 200);
@@ -607,18 +687,22 @@ async function handleSetOnline(userId, env) {
 
 async function handleListVoiceMessages(request, userId, env) {
   const matchId = new URL(request.url).searchParams.get("match_id");
+  if (!matchId) return json({ error: "match_id obrigatório" }, 400);
+  if (!(await isMatchParticipant(matchId, userId, env))) return json({ messages: [] }, 200);
   const msgs = await env.DB.prepare("SELECT * FROM voice_messages WHERE match_id = ? ORDER BY created_at ASC").bind(matchId).all().catch(()=>({results:[]}));
   return json({ messages: msgs.results }, 200);
 }
 
 async function handleSendVoice(request, userId, env) {
   const body = await request.json();
+  if (!body.match_id || !(await isMatchParticipant(body.match_id, userId, env))) return json({ error: "Match não encontrado" }, 404);
   await env.DB.prepare("INSERT INTO voice_messages (match_id, sender_id, url, duration) VALUES (?, ?, ?, ?)").bind(body.match_id, userId, body.url, body.duration || 0).run().catch(()=>{});
   return json({ success: true }, 200);
 }
 
 async function handleDisappearingMessage(request, userId, env) {
   const body = await request.json();
+  if (!body.match_id || !(await isMatchParticipant(body.match_id, userId, env))) return json({ error: "Match não encontrado" }, 404);
   const expires = Math.floor(Date.now() / 1000) + (body.ttl || 3600);
   await env.DB.prepare("INSERT INTO disappearing_messages (match_id, sender_id, content, expires_at) VALUES (?, ?, ?, ?)").bind(body.match_id, userId, body.content, expires).run().catch(()=>{});
   return json({ success: true, expires_at: expires }, 200);
@@ -651,6 +735,8 @@ async function handleGetSettings(userId, env) {
 async function handleUpdateSettings(request, userId, env) {
   const body = await request.json();
   for (const key of Object.keys(body)) {
+    // Nome de coluna validado para evitar injeção via chave.
+    if (!/^[a-z_][a-z0-9_]{0,30}$/i.test(key)) return json({ error: "Configuração inválida: " + key }, 400);
     await env.DB.prepare("INSERT OR REPLACE INTO user_settings (user_id, " + key + ") VALUES (?, ?)").bind(userId, body[key]).run().catch(()=>{});
   }
   return json({ success: true }, 200);
@@ -743,37 +829,52 @@ async function handleBuyLotteryTicket(request, userId, env) {
 
 async function handlePasswordReset(request, env) {
   const body = await request.json();
+  if (!body.email) return json({ error: "Email obrigatório" }, 400);
   const user = await env.DB.prepare("SELECT id FROM users WHERE email = ?").bind(body.email).first();
-  if (!user) return json({ error: "Email não encontrado" }, 404);
-  const token = btoa(Math.random().toString()).slice(0, 32);
-  await env.DB.prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)").bind(user.id, token, Math.floor(Date.now()/1000) + 3600).run().catch(()=>{});
-  return json({ success: true, message: "Email de recuperação enviado!", token }, 200);
+  if (user) {
+    const token = bufToB64(crypto.getRandomValues(new Uint8Array(24)));
+    const tokenHash = await sha256Hex(token);
+    await env.DB.prepare("DELETE FROM password_resets WHERE user_id = ?").bind(user.id).run().catch(() => {});
+    await env.DB.prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)").bind(user.id, tokenHash, Math.floor(Date.now() / 1000) + 3600).run().catch(() => {});
+    try {
+      const from = "no-reply@" + new URL(request.url).hostname;
+      const raw = "From: Paquera <" + from + ">\r\n"
+        + "To: " + body.email + "\r\n"
+        + "Subject: Recuperação de senha - Paquera\r\n"
+        + "Content-Type: text/plain; charset=utf-8\r\n"
+        + "\r\n"
+        + "Use este código para redefinir sua senha (válido por 1 hora):\r\n\r\n"
+        + token + "\r\n\r\n"
+        + "Se não foi você quem pediu, ignore este e-mail.";
+      await env.SEND_EMAIL.send(new EmailMessage(from, body.email, raw));
+    } catch (e) {
+      console.error("Falha ao enviar email de recuperação:", e);
+    }
+  }
+  // Resposta idêntica exista ou não o e-mail, para evitar enumeração de contas.
+  return json({ success: true, message: "Se o e-mail estiver cadastrado, você receberá as instruções." }, 200);
 }
 
 async function handlePasswordResetConfirm(request, env) {
   const body = await request.json();
-  const reset = await env.DB.prepare("SELECT * FROM password_resets WHERE token = ? AND expires_at > ?").bind(body.token, Math.floor(Date.now()/1000)).first();
+  if (!body.token || !body.password || body.password.length < 6) return json({ error: "Dados inválidos" }, 400);
+  const tokenHash = await sha256Hex(body.token);
+  const reset = await env.DB.prepare("SELECT * FROM password_resets WHERE token = ? AND expires_at > ?").bind(tokenHash, Math.floor(Date.now() / 1000)).first();
   if (!reset) return json({ error: "Token inválido ou expirado" }, 400);
   const hash = await hashPassword(body.password, env);
   await env.DB.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(hash, reset.user_id).run();
-  await env.DB.prepare("DELETE FROM password_resets WHERE token = ?").bind(body.token).run();
+  await env.DB.prepare("DELETE FROM password_resets WHERE user_id = ?").bind(reset.user_id).run();
   return json({ success: true, message: "Senha alterada!" }, 200);
 }
 
 async function handlePhoneVerify(request, userId, env) {
-  const body = await request.json();
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  await env.DB.prepare("INSERT OR REPLACE INTO phone_verifications (user_id, phone, code, verified) VALUES (?, ?, ?, 0)").bind(userId, body.phone, code).run().catch(()=>{});
-  return json({ success: true, message: "Código enviado: " + code }, 200);
+  // Desabilitado: não existe provedor de SMS configurado e devolver o código
+  // na resposta permitia "auto-verificação" qualquer conta.
+  return json({ error: "Verificação por telefone indisponível: nenhum provedor de SMS está configurado." }, 503);
 }
 
 async function handlePhoneConfirm(request, userId, env) {
-  const body = await request.json();
-  const ver = await env.DB.prepare("SELECT * FROM phone_verifications WHERE user_id = ? AND code = ?").bind(userId, body.code).first();
-  if (!ver) return json({ error: "Código inválido" }, 400);
-  await env.DB.prepare("UPDATE phone_verifications SET verified = 1 WHERE user_id = ?").bind(userId).run().catch(()=>{});
-  await env.DB.prepare("UPDATE users SET is_verified = 1 WHERE id = ?").bind(userId).run().catch(()=>{});
-  return json({ success: true, message: "Telefone verificado! ✅" }, 200);
+  return json({ error: "Verificação por telefone indisponível: nenhum provedor de SMS está configurado." }, 503);
 }
 
 async function handleListEmergency(userId, env) {
@@ -882,6 +983,7 @@ async function handleTranslations(request, env) {
 
 async function handleChatBackup(request, userId, env) {
   const matchId = new URL(request.url).searchParams.get("match_id");
+  if (!matchId || !(await isMatchParticipant(matchId, userId, env))) return json({ error: "Match não encontrado" }, 404);
   const messages = await env.DB.prepare("SELECT * FROM messages WHERE match_id = ? ORDER BY created_at ASC").bind(matchId).all().catch(()=>({results:[]}));
   await env.DB.prepare("INSERT INTO chat_backups (user_id, match_id, data) VALUES (?, ?, ?)").bind(userId, matchId, JSON.stringify(messages.results)).run().catch(()=>{});
   return json({ success: true, count: messages.results.length }, 200);
@@ -947,10 +1049,67 @@ function calcAge(birthDate) {
   return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
 }
 
+// --- Senhas, tokens e autorização ---
+
+function bufToB64(buf) {
+  const b = new Uint8Array(buf);
+  let s = "";
+  for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+  return btoa(s);
+}
+
+function safeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function derivePasswordBits(password, salt, iterations) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  return crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations, hash: "SHA-256" }, key, 256);
+}
+
+// Novo formato: pbkdf2$<iterações>$<salt>$<hash>
 async function hashPassword(password, env) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iterations = 100000;
+  const bits = await derivePasswordBits(password, salt, iterations);
+  return "pbkdf2$" + iterations + "$" + bufToB64(salt) + "$" + bufToB64(bits);
+}
+
+// Formato legado (SHA-256 sem salt) — mantido apenas para migrar contas antigas no login.
+async function legacyHashPassword(password, env) {
   const data = new TextEncoder().encode(password + env.JWT_SECRET);
   const hash = await crypto.subtle.digest("SHA-256", data);
   return btoa(String.fromCharCode(...new Uint8Array(hash)));
+}
+
+async function verifyPassword(password, stored, env) {
+  if (!stored) return false;
+  if (stored.startsWith("pbkdf2$")) {
+    const [, iterStr, saltB64, hashB64] = stored.split("$");
+    const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+    const bits = await derivePasswordBits(password, salt, parseInt(iterStr, 10) || 100000);
+    return safeEqual(bufToB64(bits), hashB64);
+  }
+  return safeEqual(await legacyHashPassword(password, env), stored);
+}
+
+async function sha256Hex(text) {
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function isAdmin(userId, env) {
+  if (!userId) return false;
+  const u = await env.DB.prepare("SELECT is_admin FROM users WHERE id = ?").bind(userId).first().catch(() => null);
+  return !!(u && u.is_admin);
+}
+
+async function isMatchParticipant(matchId, userId, env) {
+  const m = await env.DB.prepare("SELECT id FROM matches WHERE id = ? AND (user1_id = ? OR user2_id = ?)").bind(matchId, userId, userId).first().catch(() => null);
+  return !!m;
 }
 
 async function signToken(payload, env) {
