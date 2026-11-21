@@ -34,7 +34,7 @@ export default {
       const nr = new Response(resp.body, resp);
       const ext = url.pathname.split(".").pop()?.toLowerCase();
       if (["css","js","png","jpg","jpeg","gif","svg","ico","woff","woff2","ttf","webp","avif"].includes(ext))
-        nr.headers.set("Cache-Control", "public, max-age=86400, s-maxage=86400");
+        nr.headers.set("Cache-Control", "public, max-age=31536000, s-maxage=31536000");
       else if (url.pathname.endsWith(".html"))
         nr.headers.set("Cache-Control", "public, max-age=3600, s-maxage=3600");
       nr.headers.set("X-Content-Type-Options", "nosniff");
