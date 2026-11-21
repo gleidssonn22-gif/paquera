@@ -1,0 +1,13 @@
+{
+  "name": "Paquera",
+  "url": "https://clubewins.com.br/",
+  "description": "Site de relacionamentos com swipe, chat em tempo real e match por IA.",
+  "type": "website",
+  "language": "pt-BR",
+  "resources": [
+    { "name": "Início", "url": "https://clubewins.com.br/" },
+    { "name": "Sobre", "url": "https://clubewins.com.br/sobre.html" },
+    { "name": "Planos", "url": "https://clubewins.com.br/planos.html" },
+    { "name": "FAQ", "url": "https://clubewins.com.br/faq.html" }
+  ]
+}

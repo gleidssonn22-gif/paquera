@@ -1,0 +1,14 @@
+# Paquera
+
+> Site de relacionamentos com swipe, chat em tempo real e match por inteligência artificial. Encontre seu match perfeito em clubewins.com.br.
+
+## Páginas
+
+- [Início](https://clubewins.com.br/)
+- [Sobre](https://clubewins.com.br/sobre.html)
+- [Planos](https://clubewins.com.br/planos.html)
+- [FAQ](https://clubewins.com.br/faq.html)
+- [Cadastro](https://clubewins.com.br/cadastro.html)
+- [Entrar](https://clubewins.com.br/entrar.html)
+- [Termos](https://clubewins.com.br/termos.html)
+- [Privacidade](https://clubewins.com.br/privacidade.html)
