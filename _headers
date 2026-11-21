@@ -1,8 +1,9 @@
 /*
-  Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' https: data: blob:; font-src 'self' https:; connect-src 'self' wss: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://al5sm.com https://quge5.com;
-  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' wss: https:; frame-src https:; media-src 'self' https: blob:; worker-src 'self' blob:;
+  X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(self)
   X-XSS-Protection: 1; mode=block
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Permitted-Cross-Domain-Policies: none
